@@ -1,44 +1,19 @@
-////////// BODY AND WRAPPER //////////
-body {
-  margin: 0px auto;
-  width: 900px;
-}
-
-.wrapper {
-  .padding-normal;
-  border-left: @border;
-  border-right: @border;
-}
-
-////////// HEADER //////////
-.header {
-  padding-top: 10px;
-  h1 {
-    .center;
-    width: 100%;
-  }
-}
-
-////////// NAVIGATION //////////
-.navigation {
-  .padding-normal;
-}
-
-////////// CONTENT //////////
-.content {
-  height: 90%;
-}
-
-textarea {
-  border: none;
-  outline: 0;
-  background: transparent;
-  font-family: sans-serif;
-  resize: none;
-  overflow: hidden;
-}
 ////////// SHARED STYLING //////////
-.rounded (@radius: 5px) {
+///// COLOR PALLETTE /////
+//http://colorschemedesigner.com/#2O21T9FE8w0w0
+@light1: #9DDC9A;
+@dark1: #82A580;
+@dark2: #378F32;
+@light2: #BBEEB8;
+@light3: #C8EEC6;
+
+@light1_comp: #FDB1B3;
+@dark1_comp: #BE9394;
+@dark2_comp: #A5393C;
+@light2_comp: #FEC5C6;
+@light3_comp: #FED4D5;
+
+.rounded (@radius: 10px) {
   border-radius: @radius;
   -webkit-border-radius: @radius;
   -moz-border-radius: @radius;
@@ -72,10 +47,58 @@ textarea {
 h1 {
   .font-larger;
   .bold;
+  color: @dark2;
+  .rounded;
 }
 
+a:hover {
+ color: @dark2;
+}
+
+////////// BODY AND WRAPPER //////////
+body {
+  background: @light3;
+}
+////////// HEADER //////////
+.header {
+  padding-top: 10px;
+  h1 {
+    .center;
+    width: 100%;
+  }
+}
+
+////////// NAVIGATION //////////
+.navigation {
+  .padding-normal;
+}
+
+////////// CONTENT //////////
+.content {
+  height: 90%;
+}
+
+textarea {
+  .rounded;
+  border: 1px @dark2 solid;
+  padding: 10px;
+  padding-bottom: 30px;
+  outline: 0;
+  background: white;
+  font-family: sans-serif;
+  resize: none;
+  overflow: hidden;
+  height: 18px;
+}
+
+
 ////////// FOOTER //////////
+hr {
+  color: @dark2;
+  background: @dark2;
+  height: 2px;
+}
+
 .footer {
   .center;
-  .padding-normal;
 }

@@ -1,33 +1,3 @@
-body {
-  margin: 0px auto;
-  width: 900px;
-}
-.wrapper {
-  padding: 10px;
-  border-left: 2px grey solid;
-  border-right: 2px grey solid;
-}
-.header {
-  padding-top: 10px;
-}
-.header h1 {
-  text-align: center;
-  width: 100%;
-}
-.navigation {
-  padding: 10px;
-}
-.content {
-  height: 90%;
-}
-textarea {
-  border: none;
-  outline: 0;
-  background: transparent;
-  font-family: sans-serif;
-  resize: none;
-  overflow: hidden;
-}
 .center {
   text-align: center;
 }
@@ -49,8 +19,49 @@ textarea {
 h1 {
   font-size: 2em;
   font-weight: bold;
+  color: #378f32;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+}
+a:hover {
+  color: #378f32;
+}
+body {
+  background: #c8eec6;
+}
+.header {
+  padding-top: 10px;
+}
+.header h1 {
+  text-align: center;
+  width: 100%;
+}
+.navigation {
+  padding: 10px;
+}
+.content {
+  height: 90%;
+}
+textarea {
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border: 1px #378f32 solid;
+  padding: 10px;
+  padding-bottom: 30px;
+  outline: 0;
+  background: white;
+  font-family: sans-serif;
+  resize: none;
+  overflow: hidden;
+  height: 18px;
+}
+hr {
+  color: #378f32;
+  background: #378f32;
+  height: 2px;
 }
 .footer {
   text-align: center;
-  padding: 10px;
 }

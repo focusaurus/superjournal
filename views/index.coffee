@@ -2,4 +2,5 @@ text "I am the index content"
 div ->
   text "I am in a div"
 p "I am a paragraph"
-textarea "I am a text area"
+input type: "text", id: "date"
+textarea class: "span-24 last", -> "I am a text area"
