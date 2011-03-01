@@ -32,4 +32,5 @@ html lang: "en", ->
         text "Copyright &copy; 2011 Peter Lyons LLC"
   script type: "text/javascript", ->
     text '''$(".navigation > a").button()'''
+  p "DID THE layout.coffee file get re-rendered?" #3
 

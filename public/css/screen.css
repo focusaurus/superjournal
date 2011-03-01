@@ -1,20 +1,5 @@
-.center {
-  text-align: center;
-}
-.font-normal {
-  font-size: 1em;
-}
-.font-large {
-  font-size: 1.5em;
-}
-.font-larger {
-  font-size: 2em;
-}
-.padding-normal {
-  padding: 10px;
-}
-.bold {
-  font-weight: bold;
+body {
+  background: #c8eec6;
 }
 h1 {
   font-size: 2em;
@@ -27,21 +12,14 @@ h1 {
 a:hover {
   color: #378f32;
 }
-body {
-  background: #c8eec6;
-}
 .header {
   padding-top: 10px;
 }
 .header h1 {
   text-align: center;
-  width: 100%;
 }
 .navigation {
   padding: 10px;
-}
-.content {
-  height: 90%;
 }
 textarea {
   border-radius: 10px;
@@ -51,7 +29,7 @@ textarea {
   padding: 10px;
   padding-bottom: 30px;
   outline: 0;
-  background: white;
+  background: #fff;
   font-family: sans-serif;
   resize: none;
   overflow: hidden;
