@@ -9,6 +9,10 @@ app.configure ->
   app.use express.methodOverride()
   app.use express.bodyDecoder()
   app.use app.router
+  app.use(express.compiler
+    src: __dirname + '/public'
+    enable: ['less']
+    )
   app.use express.staticProvider(__dirname + '/public')
 
 app.register '.coffee', coffeekup
