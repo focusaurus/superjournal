@@ -1,0 +1,38 @@
+!!! 5
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(name="keywords", content="journal")
+    meta(name:"author", content="Peter Lyons")
+    meta(name="description", content="An elephant never forgets")
+    meta(name="copyright", content="2011, Peter Lyons LLC")
+    
+    link(rel="stylesheet", href="css/blueprint/screen.css", type="text/css",
+      media="screen, projection")
+    link(rel="stylesheet", href="css/screen.css", type:"text/css")
+    != "<!--[if lt IE 8]>"
+    link(rel="stylesheet", href="css/blueprint/ie.css", type="text/css",
+      media="screen, projection")
+    != "<![endif]-->"
+    link(rel="stylesheet", href="css/screen.css", type:"text/css")
+    
+    - if (title)
+      title #{title} | #{appName}
+    - else
+      title #{appName}
+    link(rel="stylesheet", href="css/sj_theme/jquery-ui.css", type:"text/css")
+    script(type="text/javascript", src="js/jquery.js")
+    script(type="text/javascript", src="js/jquery-ui.js")
+  body
+    .container
+      .header.span-24.last
+        h1 Welcome to #{appName}!
+        .navigation.span-24.last
+          a(href="/") Home
+      .content.span-24.last
+        !{body}
+      .footer.span-24.last
+        hr
+        = "Copyright &copy; 2011 Peter Lyons LLC"
+  :javascript
+    | $(".navigation > a").button()
