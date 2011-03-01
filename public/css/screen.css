@@ -1,0 +1,56 @@
+body {
+  margin: 0px auto;
+  width: 900px;
+}
+.wrapper {
+  padding: 10px;
+  border-left: 2px grey solid;
+  border-right: 2px grey solid;
+}
+.header {
+  padding-top: 10px;
+}
+.header h1 {
+  text-align: center;
+  width: 100%;
+}
+.navigation {
+  padding: 10px;
+}
+.content {
+  height: 90%;
+}
+textarea {
+  border: none;
+  outline: 0;
+  background: transparent;
+  font-family: sans-serif;
+  resize: none;
+  overflow: hidden;
+}
+.center {
+  text-align: center;
+}
+.font-normal {
+  font-size: 1em;
+}
+.font-large {
+  font-size: 1.5em;
+}
+.font-larger {
+  font-size: 2em;
+}
+.padding-normal {
+  padding: 10px;
+}
+.bold {
+  font-weight: bold;
+}
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+}
+.footer {
+  text-align: center;
+  padding: 10px;
+}

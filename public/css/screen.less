@@ -1,0 +1,81 @@
+////////// BODY AND WRAPPER //////////
+body {
+  margin: 0px auto;
+  width: 900px;
+}
+
+.wrapper {
+  .padding-normal;
+  border-left: @border;
+  border-right: @border;
+}
+
+////////// HEADER //////////
+.header {
+  padding-top: 10px;
+  h1 {
+    .center;
+    width: 100%;
+  }
+}
+
+////////// NAVIGATION //////////
+.navigation {
+  .padding-normal;
+}
+
+////////// CONTENT //////////
+.content {
+  height: 90%;
+}
+
+textarea {
+  border: none;
+  outline: 0;
+  background: transparent;
+  font-family: sans-serif;
+  resize: none;
+  overflow: hidden;
+}
+////////// SHARED STYLING //////////
+.rounded (@radius: 5px) {
+  border-radius: @radius;
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+}
+
+.center {
+  text-align: center;
+}
+
+@border: 2px grey solid;
+.font-normal {
+  font-size: 1em;
+}
+
+.font-large {
+  font-size: 1.5em;
+}
+
+.font-larger {
+  font-size: 2em;
+}
+
+.padding-normal {
+  padding: 10px;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+h1 {
+  .font-larger;
+  .bold;
+}
+
+////////// FOOTER //////////
+.footer {
+  .center;
+  .padding-normal;
+}
