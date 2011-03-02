@@ -2,7 +2,10 @@ body {
   background: #c8eec6;
 }
 h1 {
-  font-size: 2em;
+  font-size: 3em;
+  font-family: "Raleway", sans-serif;
+  letter-spacing: 0.165em;
+  word-spacing: 0.5em;
   font-weight: bold;
   color: #378f32;
   border-radius: 10px;
@@ -25,15 +28,22 @@ textarea {
   border-radius: 10px;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
-  border: 1px #378f32 solid;
+  border: 2px #82a580 solid;
   padding: 10px;
-  padding-bottom: 30px;
   outline: 0;
   background: #fff;
   font-family: sans-serif;
   resize: none;
   overflow: hidden;
   height: 18px;
+}
+pre {
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border: 2px #82a580 solid;
+  padding: 10px;
+  margin: 2px;
 }
 hr {
   color: #378f32;

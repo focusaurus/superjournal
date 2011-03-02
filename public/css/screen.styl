@@ -38,8 +38,8 @@ bold()
 padding-normal()
   padding 10px
 
-border = 2px grey solid
-
+border()
+  border 2px dark1 solid
 
 ////////// BODY AND WRAPPER //////////
 body
@@ -48,7 +48,10 @@ body
 ////////// HEADER //////////
 
 h1
-  font-larger()
+  font-size 3em
+  font-family 'Raleway', sans-serif
+  letter-spacing: 0.165em;
+  word-spacing: 0.5em;
   bold()
   color dark2
   rounded()
@@ -68,9 +71,8 @@ a:hover
 ////////// CONTENT //////////
 textarea
   rounded()
-  border 1px dark2 solid
+  border()
   padding 10px
-  padding-bottom 30px
   outline 0
   background white
   font-family sans-serif
@@ -78,6 +80,13 @@ textarea
   overflow hidden
   height 18px
 
+  
+pre
+  rounded()
+  border()
+  padding 10px
+  margin 2px
+  
 ////////// FOOTER //////////
 hr
   color dark2
