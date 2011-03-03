@@ -35,7 +35,7 @@ textarea {
   font-family: sans-serif;
   resize: none;
   overflow: hidden;
-  height: 18px;
+  height: 1.2em;
 }
 pre {
   border-radius: 10px;

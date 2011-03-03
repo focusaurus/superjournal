@@ -1,13 +1,12 @@
 textarea#newentry.span-24.last I am a text area
-a(id="save") Save
+= "Type Shift+ENTER to save"
 script(type="text/javascript", src="js/application.js")
-:javascript
-  | $("#save").button().click(function() {
-  |   $("#newentry").before("<p>" + $("#newentry").attr("value") + "</p>");
-  |  });
-  | $("#newentry").keypress(function(event) {
-  |     if (event.which === 13 && event.shiftKey) {
-  |      SJ.newEntry();
-  |     }
-  |  });
+:coffeescript
+  | $("#save").button().click ->
+  |   SJ.newEntry()
+  | $("#newentry").keypress (event) ->
+  |   SJ.newEntry() if (event.which is 13 and event.shiftKey)
+  | $("#newentry").focus()
+
+
 
