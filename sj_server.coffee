@@ -1,29 +1,27 @@
+express = require('express')
+util = require('util')
+
 locals = 
   appName: "SuperJournal"
   version: "0.0.1"
-express = require('express')
-util = require('util')
-#coffeekup = require('coffeekup')
+  
+exports.appName = locals.appName
+exports.version = locals.version
+exports.port = 9500
+
 app = express.createServer()
 app.configure ->
   app.use express.methodOverride()
   app.use express.bodyDecoder()
   app.use app.router
   app.use(require('stylus').middleware({src: __dirname + '/public'}))
-  #app.use(express.compiler
-  #  src: __dirname + '/public'
-  #  enable: ['less']
-  #  )
   app.use express.staticProvider(__dirname + '/public')
 
-#app.register '.coffee', coffeekup
 app.set 'view engine', 'jade'
-#app.set 'view options', {format: true, cache: false}
 
 app.get '/', (req, res) ->
   locals.title = "Home"
   res.render 'index', {locals: locals}
   
-port = 9500
-util.debug "#{locals.appName} server starting on port #{port}"
-app.listen port
+util.debug "#{locals.appName} server starting on port #{exports.port}"
+app.listen exports.port

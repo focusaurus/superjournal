@@ -1,12 +1,10 @@
 textarea#newentry.span-24.last I am a text area
 = "Type Shift+ENTER to save"
-script(type="text/javascript", src="js/application.js")
+#entry_list
+script(type="text/javascript", src="js/superjournal.js")
 :coffeescript
-  | $("#save").button().click ->
-  |   SJ.newEntry()
-  | $("#newentry").keypress (event) ->
-  |   SJ.newEntry() if (event.which is 13 and event.shiftKey)
-  | $("#newentry").focus()
+  | $(document).ready ->
+  |   SJ.init()
 
 
 

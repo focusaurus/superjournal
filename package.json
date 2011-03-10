@@ -1,0 +1,26 @@
+{
+  "name": "superjournal",
+  "description": "Web application for keeping a journal",
+  "version": "0.0.1",
+  "homepage": "http://peterlyons.com",
+  "repository": "ssh://git.peterlyons.com/home/plyons/projects/superjournal.git",
+  "author": "Peter Lyons <pete@peterlyons.com> (http://peterlyons.com)",
+  "main": "sj_server.coffee",
+  "directories": {
+    "lib": "lib"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "depedencies": {
+    "coffeescript": "~1.0",
+    "express": "~1.0",
+    "jade": "~0.6"
+    "jasmine-node": "~1.0",
+    "jasbin": "~1.0",
+    "jsdom": "~0.2",
+    "jquery": "~1.5",
+    "stylus": "~0.7",
+    "zombie": "~0.9"
+  }
+}
