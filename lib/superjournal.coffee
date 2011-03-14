@@ -2,7 +2,7 @@ SuperJournal = ->
 if exports?
   #Running inside node/commonJS, not a browser
   Backbone = require 'backbone'
-  
+
 window.SJ = new SuperJournal()
 
 SuperJournal::models = {}
@@ -144,7 +144,7 @@ class SuperJournal::views.AppView extends window.Backbone.View
   #persisting it to *localStorage*.
   createOnShiftEnter: (event)=>
     if (event.which is 13 and event.shiftKey)
-      value = $("#new_entry").val()
+      value = $("#new_entry").val().trim()
       if value
         entry = new SJ.models.Entry(content: value)
         view = new SJ.views.EntryView({model: entry})
