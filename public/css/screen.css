@@ -37,13 +37,22 @@ textarea {
   overflow: hidden;
   height: 1.2em;
 }
-pre {
+.entry {
+  border: 2px #82a580 solid;
   border-radius: 10px;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
-  border: 2px #82a580 solid;
   padding: 10px;
   margin: 2px;
+  white-space: pre;
+}
+.entry_createdOn {
+  background: #82a580;
+  color: #378f32;
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  padding-left: 10px;
 }
 #entry_list .edit {
   display: none;

@@ -7,13 +7,12 @@
     | $(document).ready ->
     |   window.App = new SJ.views.AppView()
     |   window.App.initialize()
+    |   $("#new_entry").focus()
   script(type="text/template", id="entry_template")
     .entry.span-24.last
       .display
-        .entry_createdOn
-          <%= createdOn %>
-        .entry_content
-          <%= content %>
+        .entry_createdOn Created: <%= createdOn %>
+        .entry_content <%= content %>
       .edit
         textarea.entry_textarea
 

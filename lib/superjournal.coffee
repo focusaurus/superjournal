@@ -65,7 +65,12 @@ class SuperJournal::views.EntryView extends window.Backbone.View
   render: =>
     #BUGBUG todo cache the template.
     template = _.template($('#entry_template').html())
-    $(this.el).html(template(this.model.toJSON()))
+    modelData = this.model.toJSON()
+    date = new Date(this.model.get("createdOn"))
+    displayDate = $.datepicker.formatDate("DD MM dd, yy", date)
+    displayDate += " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+    modelData.createdOn = displayDate
+    $(this.el).html(template(modelData))
     this.setContent()
     return this
 
@@ -129,8 +134,7 @@ class SuperJournal::views.AppView extends window.Backbone.View
   #Add a single entry item to the list by creating a view for it, and
   #appending its element to the list in the HTML.
   addOne: (entry)=>
-    view = new SJ.views.EntryView({model: entry})
-    $("#entry_list").append(view.render().el)
+    $("#entry_list").prepend(entry.view.render().el)
 
   #Add all items in the **EntryList** collection at once.
   addAll: =>
@@ -143,6 +147,7 @@ class SuperJournal::views.AppView extends window.Backbone.View
       value = $("#new_entry").val()
       if value
         entry = new SJ.models.Entry(content: value)
+        view = new SJ.views.EntryView({model: entry})
         SJ.data.EntryList.add(entry)
         $("#new_entry").val('')
         $("#new_entry").focus()
