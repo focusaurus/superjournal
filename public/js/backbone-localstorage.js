@@ -16,10 +16,14 @@ function guid() {
 // with a meaningful name, like the name you'd give a table.
 var Store = function(name) {
   this.name = name;
-  var store = localStorage.getItem(this.name);
-  this.data = (store && JSON.parse(store)) || {};
+  this.data = {};
 };
 
+if (typeof exports !== 'undefined') {
+  _ = require('underscore')._
+  Backbone = require('backbone')
+  exports.Store = Store
+}
 _.extend(Store.prototype, {
 
   // Save the current state of the **Store** to *localStorage*.

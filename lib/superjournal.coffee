@@ -1,20 +1,34 @@
-SuperJournal = ->
 if exports?
   #Running inside node/commonJS, not a browser
+  #Get our libraries into the local coffeescript function scope with 'require'
+  SJ = exports
+  $ = require 'jquery'
+  _ = require('underscore')._
   Backbone = require 'backbone'
+  require.paths.unshift './public/js'
+  Store = require('backbone-localstorage').Store
+else
+  #Running in a browser
+  #Get the libraries into the local coffeescript function scope with explicit
+  #shadowing from 'this', which is the browser's 'window' global object
+  $ = this.$ #jQuery
+  _ = this._ #underscore.js
+  Store = this.Store #backbone-localstorage
+  Backbone = this.Backbone #backbone.js
+  SJ = this.SJ = {} #Create a new empty global SJ object
 
-window.SJ = new SuperJournal()
+SJ.models = {}
+SJ.views = {}
+SJ.data = {}
 
-SuperJournal::models = {}
-SuperJournal::views = {}
-SuperJournal::data = {}
+#Save all of the entry items under the `"entries"` namespace.
+SJ.localStorage = new Store("entries")
 #--------- Entry Model ----------
-class SuperJournal::models.Entry extends window.Backbone.Model
+class SJ.models.Entry extends Backbone.Model
   
   initialize: =>
-    this.set("content": this.get("content") or "")
+    #this.set("content": this.get("content") or "")
     this.set("createdOn": new Date().getTime())
-    #this.set("order": SJ.data.EntryList.nextOrder())
 
   # Remove this Entry from *localStorage* and delete its view.
   clear: =>
@@ -22,11 +36,10 @@ class SuperJournal::models.Entry extends window.Backbone.Model
     this.view.remove()
 
 #--------- Entry Collection ----------
-class SuperJournal::models.EntryList extends window.Backbone.Collection
+class SJ.models.EntryList extends Backbone.Collection
   model: SJ.models.Entry
   url: "/entries"
-  #Save all of the entry items under the `"entries"` namespace.
-  localStorage: new Store("entries")
+  localStorage: SJ.localStorage
 
   #We keep the Entries in sequential order, despite being saved by unordered
   #GUID in the database. This generates the next order number for new items.
@@ -41,9 +54,8 @@ class SuperJournal::models.EntryList extends window.Backbone.Collection
 
 SJ.data.EntryList = new SJ.models.EntryList()
 
-
 #--------- Entry View ----------
-class SuperJournal::views.EntryView extends window.Backbone.View
+class SJ.views.EntryView extends Backbone.View
   #Cache the template function for a single item.
   #template: _.template($('#entry_template').html())
 
@@ -51,15 +63,17 @@ class SuperJournal::views.EntryView extends window.Backbone.View
   events:
     "dblclick div.entry_content": "edit"
     "click span.entry_destroy": "clear"
-    "keypress .entry_textarea": "createOnShiftEnter"
+    "keypress .entry_textarea": "closeOnShiftEnter"
   
   #The EntryView listens for changes to its model, re-rendering. Since there's
   #a one-to-one correspondence between a **Entry** and a **EntryView** in this
   #app, we set a direct reference on the model for convenience.
   initialize: =>
-    _.bindAll(this, 'render', 'close')
     this.model.bind('change', this.render)
     this.model.view = this
+
+  HTMLEncodeContent: =>
+    return $('<div/>').text(this.model.get('content')).html()
 
   #Re-render the contents of the entry item.
   render: =>
@@ -71,31 +85,25 @@ class SuperJournal::views.EntryView extends window.Backbone.View
     #BUGBUG TODO need to pad these with leading zeros as needed
     displayDate += " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
     modelData.createdOn = displayDate
+    #Escape HTML entities
+    modelData.content = this.HTMLEncodeContent()
     $(this.el).html(template(modelData))
-    this.setContent()
     return this
-
-  #To avoid XSS (not that it would be harmful in this particular app),
-  #we use `jQuery.text` to set the contents of the entry item.
-  setContent: =>
-    content = this.model.get 'content'
-    this.$('.entry_content').text(content)
-    this.textarea = this.$('.entry_textarea')
-    this.textarea.bind('blur', this.close)
-    this.textarea.val content
 
   #Switch this view into `"editing"` mode, displaying the textarea field.
   edit: =>
     $(this.el).addClass("editing")
-    this.textarea.focus()
+    $(this.el).find("textarea").focus()
+    $(this.el).find("textarea").val(this.model.get('content'))
 
   #Close the `"editing"` mode, saving changes to the entry.
   close: =>
-    this.model.save({content: this.textarea.val()})
+    rawValue = $(this.el).find("textarea").val()
+    this.model.save({content: rawValue})
     $(this.el).removeClass("editing")
 
   #If you hit `enter`, we're through editing the item.
-  createOnShiftEnter: (event)=>
+  closeOnShiftEnter: (event)=>
     if (event.which is 13 and event.shiftKey)
       this.close()
 
@@ -108,7 +116,7 @@ class SuperJournal::views.EntryView extends window.Backbone.View
     this.model.clear()
 
 #--------- The Application ----------
-class SuperJournal::views.AppView extends window.Backbone.View
+class SJ.views.AppView extends Backbone.View
   #Instead of generating a new element, bind to the existing skeleton of
   #the App already present in the HTML.
   #BUGBUG is this actually used?
@@ -117,7 +125,6 @@ class SuperJournal::views.AppView extends window.Backbone.View
   #Delegated events for creating new items, and clearing completed ones.
   events:
     "keypress #new_entry":  "createOnShiftEnter"
-    "keyup #new_entry":     "showTooltip"
     "click .entry_clear a": "clearCompleted"
 
   #At initialization we bind to the relevant events on the `Entries`
@@ -152,17 +159,3 @@ class SuperJournal::views.AppView extends window.Backbone.View
         SJ.data.EntryList.add(entry)
         $("#new_entry").val('')
         $("#new_entry").focus()
-
-  #Lazily show the tooltip that tells you to press `enter` to save
-  #a new entry item, after one second.
-  showTooltip: (e)=>
-    tooltip = this.$(".ui-tooltip-top")
-    val = this.textarea.val()
-    tooltip.fadeOut()
-    if (this.tooltipTimeout)
-      clearTimeout(this.tooltipTimeout)
-    if (val == '' or val == this.textarea.attr('placeholder'))
-      return
-    show = ->
-      tooltip.show().fadeIn()
-    this.tooltipTimeout = _.delay(show, 1000)

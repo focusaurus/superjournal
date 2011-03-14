@@ -1,21 +1,19 @@
 assert = require "assert"
 util = require "util"
 require.paths.unshift "lib"
-SJ = require("superjournal").SJ
+SJ = require("superjournal")
 
 describe 'Entry', ()->
-  entry = {}
+  testContent = 'foo\nbar'
+  entry = new SJ.models.Entry(content: testContent)
   
   beforeEach ()->
-    entry = new SJ.models.Entry("foo\nbar")
+    entry = new SJ.models.Entry(content: testContent)
+
   it 'should store the content', ()->
-    expect(entry.content).toBeDefined()
-    entry = new SJ.models.Entry "bingo"
-    expect(entry.content).toEqual("bingo")
+    expect(entry.get 'content').toEqual(testContent)
 
   it 'should store a new epoch timestamp', ()->
-    entry = new SJ.models.Entry "bingo"
-    expect(entry.createdOn).toBeDefined()
-    expect(0 < entry.createdOn < new Date().getTime() + 1).toBe(true)
-    entry2 = new SJ.models.Entry "bango"
-    expect(entry.createdOn < entry2.createdOn + 1).toBe(true)
+    expect(0 < entry.get('createdOn') < new Date().getTime() + 1).toBe(true)
+    entry2 = new SJ.models.Entry
+    expect(entry.get('createdOn') < entry2.get('createdOn') + 1).toBe(true)
