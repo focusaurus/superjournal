@@ -68,6 +68,7 @@ class SuperJournal::views.EntryView extends window.Backbone.View
     modelData = this.model.toJSON()
     date = new Date(this.model.get("createdOn"))
     displayDate = $.datepicker.formatDate("DD MM dd, yy", date)
+    #BUGBUG TODO need to pad these with leading zeros as needed
     displayDate += " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
     modelData.createdOn = displayDate
     $(this.el).html(template(modelData))
