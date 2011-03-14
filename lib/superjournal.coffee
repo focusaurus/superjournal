@@ -4,23 +4,13 @@ if exports?
   Backbone = require 'backbone'
   
 window.SJ = new SuperJournal()
-SuperJournal::newEntry = () ->
-  entry = $("#new_entry")
-  $("#entry_list").prepend("<pre>" + entry.attr("value") + "</pre>")
-  entry.val('')
-  entry.focus()
-  
-SuperJournal::init = () ->
-  $("#new_entry").keypress (event) ->
-    SJ.newEntry() if (event.which is 13 and event.shiftKey)
-    $("#new_entry").focus()
 
 SuperJournal::models = {}
 SuperJournal::views = {}
 SuperJournal::data = {}
 #--------- Entry Model ----------
 class SuperJournal::models.Entry extends window.Backbone.Model
-#SuperJournal::models.Entry = window.Backbone.Model.extend(
+  
   initialize: =>
     this.set("content": this.get("content") or "")
     this.set("createdOn": new Date().getTime())
@@ -30,14 +20,9 @@ class SuperJournal::models.Entry extends window.Backbone.Model
   clear: =>
     this.destroy()
     this.view.remove()
-#)
-#SuperJournal::models.Entry = (content) ->
-#  this.content = content
-#  this.createdOn = new Date().getTime()
-#
 
 #--------- Entry Collection ----------
-SJ.models.EntryList = window.Backbone.Collection.extend(
+class SuperJournal::models.EntryList extends window.Backbone.Collection
   model: SJ.models.Entry
   url: "/entries"
   #Save all of the entry items under the `"entries"` namespace.
@@ -45,21 +30,20 @@ SJ.models.EntryList = window.Backbone.Collection.extend(
 
   #We keep the Entries in sequential order, despite being saved by unordered
   #GUID in the database. This generates the next order number for new items.
-  nextOrder: ->
+  nextOrder: =>
     if (!this.length)
       return 1
     return this.last().get('order') + 1
 
   #Entries are sorted by their original insertion order.
-  comparator: (entry)->
+  comparator: (entry)=>
     return entry.get 'order'
-)
 
 SJ.data.EntryList = new SJ.models.EntryList()
 
 
 #--------- Entry View ----------
-SJ.views.EntryView = window.Backbone.View.extend(
+class SuperJournal::views.EntryView extends window.Backbone.View
   #Cache the template function for a single item.
   #template: _.template($('#entry_template').html())
 
@@ -72,13 +56,13 @@ SJ.views.EntryView = window.Backbone.View.extend(
   #The EntryView listens for changes to its model, re-rendering. Since there's
   #a one-to-one correspondence between a **Entry** and a **EntryView** in this
   #app, we set a direct reference on the model for convenience.
-  initialize: ->
+  initialize: =>
     _.bindAll(this, 'render', 'close')
     this.model.bind('change', this.render)
     this.model.view = this
 
   #Re-render the contents of the entry item.
-  render: ->
+  render: =>
     #BUGBUG todo cache the template.
     template = _.template($('#entry_template').html())
     $(this.el).html(template(this.model.toJSON()))
@@ -87,7 +71,7 @@ SJ.views.EntryView = window.Backbone.View.extend(
 
   #To avoid XSS (not that it would be harmful in this particular app),
   #we use `jQuery.text` to set the contents of the entry item.
-  setContent: ->
+  setContent: =>
     content = this.model.get 'content'
     this.$('.entry_content').text(content)
     this.textarea = this.$('.entry_textarea')
@@ -95,31 +79,30 @@ SJ.views.EntryView = window.Backbone.View.extend(
     this.textarea.val content
 
   #Switch this view into `"editing"` mode, displaying the textarea field.
-  edit: ->
+  edit: =>
     $(this.el).addClass("editing")
     this.textarea.focus()
 
   #Close the `"editing"` mode, saving changes to the entry.
-  close: ->
+  close: =>
     this.model.save({content: this.textarea.val()})
     $(this.el).removeClass("editing")
 
   #If you hit `enter`, we're through editing the item.
-  createOnShiftEnter: (event)->
+  createOnShiftEnter: (event)=>
     if (event.which is 13 and event.shiftKey)
       this.close()
 
   #Remove this view from the DOM.
-  remove: ->
+  remove: =>
     $(this.el).remove()
 
   #Remove the item, destroy the model.
-  clear: ->
+  clear: =>
     this.model.clear()
-)
 
 #--------- The Application ----------
-SJ.views.AppView = window.Backbone.View.extend(
+class SuperJournal::views.AppView extends window.Backbone.View
   #Instead of generating a new element, bind to the existing skeleton of
   #the App already present in the HTML.
   #BUGBUG is this actually used?
@@ -134,9 +117,7 @@ SJ.views.AppView = window.Backbone.View.extend(
   #At initialization we bind to the relevant events on the `Entries`
   #collection, when items are added or changed. Kick things off by
   #loading any preexisting entrys that might be saved in *localStorage*.
-  initialize: ->
-    _.bindAll(this, 'addOne', 'addAll')
-
+  initialize: =>
     this.textarea    = $("#new_entry")
     this.textarea.keyup this.createOnShiftEnter
 
@@ -147,24 +128,17 @@ SJ.views.AppView = window.Backbone.View.extend(
     EntryList.fetch()
   #Add a single entry item to the list by creating a view for it, and
   #appending its element to the list in the HTML.
-  addOne: (entry)->
+  addOne: (entry)=>
     view = new SJ.views.EntryView({model: entry})
     $("#entry_list").append(view.render().el)
 
   #Add all items in the **EntryList** collection at once.
-  addAll: ->
+  addAll: =>
     SJ.data.EntryList.each(this.addOne)
-
-  #Generate the attributes for a new Entry item.
-  newAttributes: ->
-    return {
-      content: this.textarea.val()
-      order:   EntryList.nextOrder()
-    }
 
   #If you hit return in the main textarea field, create new **Entry** model,
   #persisting it to *localStorage*.
-  createOnShiftEnter: (event)->
+  createOnShiftEnter: (event)=>
     if (event.which is 13 and event.shiftKey)
       value = $("#new_entry").val()
       if value
@@ -175,7 +149,7 @@ SJ.views.AppView = window.Backbone.View.extend(
 
   #Lazily show the tooltip that tells you to press `enter` to save
   #a new entry item, after one second.
-  showTooltip: (e)->
+  showTooltip: (e)=>
     tooltip = this.$(".ui-tooltip-top")
     val = this.textarea.val()
     tooltip.fadeOut()
@@ -186,4 +160,3 @@ SJ.views.AppView = window.Backbone.View.extend(
     show = ->
       tooltip.show().fadeIn()
     this.tooltipTimeout = _.delay(show, 1000)
-)
