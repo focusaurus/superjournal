@@ -35,7 +35,7 @@ textarea {
   font-family: sans-serif;
   resize: none;
   overflow: hidden;
-  height: 1.2em;
+  height: 5em;
 }
 .entry {
   border: 2px #82a580 solid;
@@ -67,6 +67,7 @@ hr {
   color: #378f32;
   background: #378f32;
   height: 2px;
+  margin: 10px;
 }
 .footer {
   text-align: center;
