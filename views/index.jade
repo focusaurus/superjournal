@@ -1,10 +1,19 @@
-textarea#newentry.span-24.last I am a text area
-= "Type Shift+ENTER to save"
-#entry_list
-script(type="text/javascript", src="js/superjournal.js")
-:coffeescript
-  | $(document).ready ->
-  |   SJ.init()
-
-
+#superjournal
+  .ui-tooltip-top
+  textarea#new_entry.span-24.last I am a text area
+  = "Type Shift+ENTER to save"
+  #entry_list
+  :coffeescript
+    | $(document).ready ->
+    |   window.App = new SJ.views.AppView()
+    |   window.App.initialize()
+  script(type="text/template", id="entry_template")
+    .entry.span-24.last
+      .display
+        .entry_createdOn
+          <%= createdOn %>
+        .entry_content
+          <%= content %>
+      .edit
+        textarea.entry_textarea
 

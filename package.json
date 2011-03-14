@@ -21,6 +21,7 @@
     "jsdom": "~0.2",
     "jquery": "~1.5",
     "stylus": "~0.7",
-    "zombie": "~0.9"
+    "zombie": "~0.9",
+    "backbone": "~0.3"
   }
 }

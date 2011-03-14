@@ -45,6 +45,12 @@ pre {
   padding: 10px;
   margin: 2px;
 }
+#entry_list .edit {
+  display: none;
+}
+#entry_list .editing .edit {
+  display: block;
+}
 hr {
   color: #378f32;
   background: #378f32;
