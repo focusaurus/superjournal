@@ -1,3 +1,4 @@
 *~
 tmp
 public/js/superjournal.js
+spec/js/*/*.js

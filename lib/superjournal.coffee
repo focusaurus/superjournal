@@ -2,11 +2,15 @@ if exports?
   #Running inside node/commonJS, not a browser
   #Get our libraries into the local coffeescript function scope with 'require'
   SJ = exports
+  #IMPORTANT. We must load the jquery module BEFORE adding 'public/js' to
+  #the require path. Otherwise we'll load the browser jquery code instead of
+  #the node.js version
   $ = require 'jquery'
+  require.paths.unshift './public/js'
   _ = require('underscore')._
   Backbone = require 'backbone'
-  require.paths.unshift './public/js'
   Store = require('backbone-localstorage').Store
+  require.paths.shift()
 else
   #Running in a browser
   #Get the libraries into the local coffeescript function scope with explicit
@@ -57,7 +61,8 @@ SJ.data.EntryList = new SJ.models.EntryList()
 #--------- Entry View ----------
 class SJ.views.EntryView extends Backbone.View
   #Cache the template function for a single item.
-  #template: _.template($('#entry_template').html())
+  #BUGBUG TODO
+  #template: null
 
   #The DOM events specific to an item.
   events:
@@ -78,14 +83,12 @@ class SJ.views.EntryView extends Backbone.View
   formatDate: =>
     date = new Date(this.model.get("createdOn"))
     displayDate = $.datepicker.formatDate("DD MM dd, yy", date)
-    #BUGBUG TODO need to pad these with leading zeros as needed
     displayDate += (" " + pad(date.getHours(), 2) +
       ":" + pad(date.getMinutes(), 2) +
       ":" + pad(date.getSeconds(), 2))
     
   #Re-render the contents of the entry item.
   render: =>
-    #BUGBUG todo cache the template.
     template = _.template($('#entry_template').html())
     modelData = this.model.toJSON()
     

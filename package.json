@@ -1,11 +1,11 @@
 {
   "name": "superjournal",
   "description": "Web application for keeping a journal",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "http://peterlyons.com",
   "repository": "ssh://git.peterlyons.com/home/plyons/projects/superjournal.git",
   "author": "Peter Lyons <pete@peterlyons.com> (http://peterlyons.com)",
-  "main": "sj_server.coffee",
+  "main": "server.coffee",
   "directories": {
     "lib": "lib"
   },

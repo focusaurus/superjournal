@@ -10,7 +10,7 @@ if [ -f "${PID_FILE}" ]; then
     echo "killing old node process $(cat ${PID_FILE})"
     kill $(cat "${PID_FILE}")
 fi
-coffee sj_server.coffee &
+coffee server.coffee &
 echo "$!" > "${PID_FILE}"
 echo "new node process started with pid $(cat ${PID_FILE})"
 sleep 2
