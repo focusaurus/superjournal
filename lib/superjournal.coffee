@@ -27,8 +27,8 @@ SJ.localStorage = new Store("entries")
 class SJ.models.Entry extends Backbone.Model
   
   initialize: =>
-    #this.set("content": this.get("content") or "")
-    this.set("createdOn": new Date().getTime())
+    this.set("content": this.get("content") or "")
+    this.set("createdOn": this.get("createdOn") or new Date().getTime())
 
   # Remove this Entry from *localStorage* and delete its view.
   clear: =>
@@ -75,16 +75,21 @@ class SJ.views.EntryView extends Backbone.View
   HTMLEncodeContent: =>
     return $('<div/>').text(this.model.get('content')).html()
 
+  formatDate: =>
+    date = new Date(this.model.get("createdOn"))
+    displayDate = $.datepicker.formatDate("DD MM dd, yy", date)
+    #BUGBUG TODO need to pad these with leading zeros as needed
+    displayDate += (" " + pad(date.getHours(), 2) +
+      ":" + pad(date.getMinutes(), 2) +
+      ":" + pad(date.getSeconds(), 2))
+    
   #Re-render the contents of the entry item.
   render: =>
     #BUGBUG todo cache the template.
     template = _.template($('#entry_template').html())
     modelData = this.model.toJSON()
-    date = new Date(this.model.get("createdOn"))
-    displayDate = $.datepicker.formatDate("DD MM dd, yy", date)
-    #BUGBUG TODO need to pad these with leading zeros as needed
-    displayDate += " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
-    modelData.createdOn = displayDate
+    
+    modelData.createdOn = this.formatDate()
     #Escape HTML entities
     modelData.content = this.HTMLEncodeContent()
     $(this.el).html(template(modelData))
@@ -159,3 +164,10 @@ class SJ.views.AppView extends Backbone.View
         SJ.data.EntryList.add(entry)
         $("#new_entry").val('')
         $("#new_entry").focus()
+        
+        
+pad = (number, length)->
+  str = '' + number
+  while (str.length < length)
+    str = '0' + str
+  return str

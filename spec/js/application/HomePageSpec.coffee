@@ -1,6 +1,4 @@
 zombie = require "zombie"
-assert = require "assert"
-jasmine = require 'jasmine-node'
 
 describe 'the home page', ->
   it "should have the basic layout HTML", ->
