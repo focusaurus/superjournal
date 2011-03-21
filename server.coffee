@@ -1,9 +1,7 @@
 util = require 'util'
 express = require 'express'
 
-require.paths.unshift '.'
-config = require 'server_config'
-require.paths.shift()
+config = require './server_config'
 
 app = express.createServer()
 app.use express.methodOverride()

@@ -1,8 +1,8 @@
+config = require '../../../server_config'
+util = require 'util'
 zombie = require 'zombie'
-require.paths.unshift '.'
-config = require 'server_config'
+
 describe 'Pages using the main layout', ->
-  #require.paths.shift()
 
   it "should have the basic layout HTML", ->
     browser = new zombie.Browser()

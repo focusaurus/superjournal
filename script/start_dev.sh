@@ -10,8 +10,8 @@ if [ -f "${PID_FILE}" ]; then
     echo "killing old node process $(cat ${PID_FILE})"
     kill $(cat "${PID_FILE}")
 fi
-coffee server.coffee &
+NODE_ENV=test coffee server.coffee &
 echo "$!" > "${PID_FILE}"
 echo "new node process started with pid $(cat ${PID_FILE})"
 sleep 2
-open -a "Google Chrome" http://localhost:9500
+open -a "Google Chrome" "http://localhost:9500"
