@@ -13,5 +13,5 @@ fi
 NODE_ENV=test coffee server.coffee &
 echo "$!" > "${PID_FILE}"
 echo "new node process started with pid $(cat ${PID_FILE})"
-sleep 2
+sleep 1
 open -a "Google Chrome" "http://localhost:9500"
