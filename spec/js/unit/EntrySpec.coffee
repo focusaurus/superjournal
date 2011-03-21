@@ -1,6 +1,6 @@
 if exports?
   #Running in node.js, load dependencies
-  SJ = require("../../../lib/superjournal")
+  SJ = require("../../../public/js/superjournal")
 else
   #Running in the browser, dependencies already in global window object
   SJ = window.SJ

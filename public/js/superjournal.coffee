@@ -2,15 +2,12 @@ if exports?
   #Running inside node/commonJS, not a browser
   #Get our libraries into the local coffeescript function scope with 'require'
   SJ = exports
-  #IMPORTANT. We must load the jquery module BEFORE adding 'public/js' to
-  #the require path. Otherwise we'll load the browser jquery code instead of
-  #the node.js version
+  #IMPORTANT. We must load the NODE version of jquery
+  #NOT the browser jquery, which will cause all kinds of breakage
   $ = require 'jquery'
-  require.paths.unshift './public/js'
-  _ = require('underscore')._
-  Backbone = require 'backbone'
-  Store = require('backbone-localstorage').Store
-  require.paths.shift()
+  _ = require('./underscore')._
+  Backbone = require './backbone'
+  Store = require('./backbone-localstorage').Store
 else
   #Running in a browser
   #Get the libraries into the local coffeescript function scope with explicit
