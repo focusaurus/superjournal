@@ -1,12 +1,11 @@
+if exports?
+  #Running in node.js, load dependencies
+  SJ = require("../../../lib/superjournal")
+else
+  #Running in the browser, dependencies already in global window object
+  SJ = window.SJ
+    
 describe 'Entry', ->
-  if exports?
-    #Running in node.js, load dependencies
-    require.paths.unshift "lib"
-    SJ = require("superjournal")
-  else
-    #Running in the browser, dependencies already in global window object
-    SJ = window.SJ
-  
   testContent = 'foo\nbar'
   entry = new SJ.models.Entry(content: testContent)
   
