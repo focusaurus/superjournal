@@ -5,14 +5,14 @@ config = require './server_config'
 
 app = express.createServer()
 app.use express.methodOverride()
-app.use express.bodyDecoder()
+app.use express.bodyParser()
 app.use app.router
+app.use express.static(__dirname + '/public')
 app.use(require('stylus').middleware({src: __dirname + '/public'}))
-app.use express.staticProvider(__dirname + '/public')
 app.set 'view engine', 'jade'
 
 app.configure 'test', ()->
-  app.use express.staticProvider(__dirname + '/spec')
+  app.use express.static(__dirname + '/spec')
 
 locals =
   appName: config.appName
