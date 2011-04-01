@@ -80,9 +80,7 @@ class SJ.views.EntryView extends Backbone.View
   formatDate: =>
     date = new Date(this.model.get("createdOn"))
     displayDate = $.datepicker.formatDate("DD MM dd, yy", date)
-    displayDate += (" " + pad(date.getHours(), 2) +
-      ":" + pad(date.getMinutes(), 2) +
-      ":" + pad(date.getSeconds(), 2))
+    displayDate += (" " + date.toTimeString().split(' ')[0])
     
   #Re-render the contents of the entry item.
   render: =>
@@ -164,10 +162,3 @@ class SJ.views.AppView extends Backbone.View
         SJ.data.EntryList.add(entry)
         $("#new_entry").val('')
         $("#new_entry").focus()
-        
-        
-pad = (number, length)->
-  str = '' + number
-  while (str.length < length)
-    str = '0' + str
-  return str
