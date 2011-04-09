@@ -24,6 +24,7 @@ app:clean() {
 app:stop_watchers() {
     cdpd
     killpid tmp/watchers.pid "coffee compile watcher"
+    killpid tmp/watchers.pid "stylus compile watcher"
 }
 
 app:start_watchers() {
@@ -31,7 +32,8 @@ app:start_watchers() {
     cdpd
     [ -d tmp ] || mkdir tmp
     coffee --compile --watch public spec &
-    echo "$!" > tmp/watchers.pid
-    #stylus --watch public/css &
+    echo "$!" > tmp/coffee.pid
+    stylus --watch public/css &
+    echo "$!" > tmp/stylus.pid
 }
 
