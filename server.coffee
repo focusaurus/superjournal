@@ -24,5 +24,5 @@ app.get '/', (req, res) ->
   locals.title = "Home"
   res.render 'index', {locals: locals}
   
-util.debug "#{config.appName} server starting on port #{config.port}"
+util.debug "#{config.appName} server starting on port http://localhost:#{config.port}"
 app.listen config.port
