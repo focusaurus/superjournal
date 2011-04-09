@@ -213,7 +213,6 @@ if [ -z "${ENV_NAME}" ]; then
     #Now load in the project-specific stuff
     for FILE in "${TASK_DIR}/"*_tasks.sh
     do
-        echo "BUGBUG loading ${FILE}"
         source "${FILE}"
     done
     setup
