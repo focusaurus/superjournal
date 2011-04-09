@@ -6,17 +6,9 @@
 #Helper functions
 kill_stale() {
     PID_FILE="${PROJECT_DIR}/tmp/server.pid"
-    echo "BUGBUG PID_FILE: ${PID_FILE}"
     local PID_DIR="$(dirname ${PID_FILE})"
     [ -d "${PID_DIR}" ] || mkdir "${PID_DIR}"
-    if [ -f "${PID_FILE}" ]; then
-        PID=$(cat "${PID_FILE}")
-        if ps -p "${PID}" > /dev/null; then
-            echo "killing old node server process $(cat ${PID_FILE})"
-            kill "${PID}"
-            rm "${PID_FILE}"
-        fi
-    fi
+    killpid "${PID_FILE}" "node server"
 }
 
 app:prereqs() {

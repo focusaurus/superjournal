@@ -31,6 +31,17 @@ cdpd() {
     cd "${PROJECT_DIR}"
 }
 
+killpid() {
+    if [ -f "${1}" ]; then
+        PID=$(cat "${1}")
+        if ps -p "${PID}" > /dev/null; then
+            echo "killing old ${2} $(cat ${1})"
+            kill "${PID}"
+            rm "${1}"
+        fi
+    fi
+}
+
 ########## No-Op Test Tasks for sudo, root, and normal user ##########
 #Use these to make sure your passwordless ssh is working, hosts are correct, etc
 test:uptime() {
