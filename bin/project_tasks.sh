@@ -1,7 +1,26 @@
+#Called by tasks.sh to initialize key variables
 setup() {
     cd "${TASK_DIR}/.."
     PROJECT_DIR=$(pwd)
     cd - > /dev/null
+}
+
+mktmp() {
+    cdpd
+    [ -d tmp ] || mkdir tmp
+    cd -
+}
+
+os:prereqs() {
+    case $(uname) in
+        Darwin)
+            #Install phantom js
+            sudo port selfupdate
+            sudo port install phantomjs
+        ;;
+        Linux)
+        ;;
+    esac
 }
 
 app:test() {
@@ -30,7 +49,7 @@ app:stop_watchers() {
 app:start_watchers() {
     app:stop_watchers
     cdpd
-    [ -d tmp ] || mkdir tmp
+    mktmp
     coffee --compile --watch public spec &
     echo "$!" > tmp/coffee.pid
     stylus --watch public/css &

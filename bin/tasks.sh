@@ -42,21 +42,6 @@ killpid() {
     fi
 }
 
-########## No-Op Test Tasks for sudo, root, and normal user ##########
-#Use these to make sure your passwordless ssh is working, hosts are correct, etc
-test:uptime() {
-    uptime
-}
-
-test:uptime_sudo() { #TASK: sudo
-    uptime
-    id
-}
-########## OS Section ##########
-#Wrapper function for getting everything in the OS bootstrapped
-os:initial_setup() { #TASK: sudo
-    os:prereqs
-}
 
 
 #Install some Ubuntu packages using apt-get install
@@ -76,6 +61,18 @@ link() {
     if [ ! -h "${1}" ]; then
         ln -s "${OVERLAY}${1}" "${1}"
     fi
+}
+
+
+########## No-Op Test Tasks for sudo, root, and normal user ##########
+#Use these to make sure your passwordless ssh is working, hosts are correct, etc
+test:uptime() {
+    uptime
+}
+
+test:uptime_sudo() { #TASK: sudo
+    uptime
+    id
 }
 
 ########## User Section ##########
