@@ -64,7 +64,7 @@ class SJ.views.EntryView extends Backbone.View
   #The DOM events specific to an item.
   events:
     "dblclick div.entry_content": "edit"
-    "click span.entry_destroy": "clear"
+    "click a.entry_delete": "clear"
     "keypress .entry_textarea": "closeOnShiftEnter"
   
   #The EntryView listens for changes to its model, re-rendering. Since there's
@@ -101,7 +101,7 @@ class SJ.views.EntryView extends Backbone.View
 
   #Close the `"editing"` mode, saving changes to the entry.
   close: =>
-    rawValue = $(this.el).find("textarea").val()
+    rawValue = this.$("textarea").val()
     this.model.save({content: rawValue})
     $(this.el).removeClass("editing")
 
@@ -109,10 +109,6 @@ class SJ.views.EntryView extends Backbone.View
   closeOnShiftEnter: (event)=>
     if (event.which is 13 and event.shiftKey)
       this.close()
-
-  #Remove this view from the DOM.
-  remove: =>
-    $(this.el).remove()
 
   #Remove the item, destroy the model.
   clear: =>

@@ -54,6 +54,16 @@ textarea {
   -moz-border-radius: 10px;
   padding-left: 10px;
 }
+.entry_delete {
+  color: #a5393c;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 2px;
+  margin: 2px;
+}
+.entry_delete:hover {
+  cursor: pointer;
+}
 #entry_list .edit {
   display: none;
 }

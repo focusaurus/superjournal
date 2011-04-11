@@ -12,7 +12,9 @@
   script(type="text/template", id="entry_template")
     .entry.span-24.last
       .display
-        .entry_createdOn Created: <%= createdOn %>
+        .entry_createdOn
+          span.span-23 Created: <%= createdOn %>
+          a.entry_delete X
         .entry_content <%= content %>
       .edit
         textarea.entry_textarea
