@@ -31,8 +31,11 @@ html(lang="en")
     .container
       .header.span-24.last
         h1 Welcome to #{appName}!
+        - if (user)
+          form#signout_form(method='post', action='/signout')
+            | #{user}
+            a#signout_link(href='javascript:$("#signout_form").submit();') Sign out
         .navigation.span-24.last
-          a(href="/") Home
       .content.span-24.last
         !{body}
       .footer.span-24.last
@@ -40,4 +43,4 @@ html(lang="en")
         = "Copyright &copy; 2011 Peter Lyons LLC"
   :coffeescript
      $(document).ready ->
-       $(".navigation > a").button()
+       $("#signout_link").button()

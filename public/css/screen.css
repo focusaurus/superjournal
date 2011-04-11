@@ -37,6 +37,9 @@ textarea {
   overflow: hidden;
   height: 5em;
 }
+#signout_link {
+  font-size: 0.7em;
+}
 .entry {
   border: 2px #82a580 solid;
   border-radius: 10px;

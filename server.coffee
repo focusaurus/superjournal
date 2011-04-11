@@ -15,6 +15,8 @@ if process.env.NODE_ENV not in ['production', 'staging']
   ip = '0.0.0.0'
 app.use express.methodOverride()
 app.use express.bodyParser()
+app.use express.cookieParser()
+app.use express.session secret: "SuperJournaling asoetuhasoetuhas"
 app.use app.router
 #Note to self. static comes BEFORE stylus or plain .css won't work
 app.use express.static(__dirname + '/public')
@@ -26,8 +28,20 @@ defaultLocals =
   version: config.version
 
 app.get '/', (req, res) ->
-  locals = _.defaults({title: "Home"}, defaultLocals)
-  res.render 'index', {locals: locals}
+  locals = _.defaults({title: "Home", user: req.session.user}, defaultLocals)
+  if not req.session.user
+    locals.title = 'Sign In'
+    res.render 'signin', {locals: locals}
+  else
+    res.render 'index', {locals: locals}
+
+app.post '/signin', (req, res) ->
+  req.session.user = req.param 'email'
+  res.redirect '/'
+  
+app.post '/signout', (req, res) ->
+  req.session.user = null
+  res.redirect '/'
 
 util.debug "#{config.appName} server starting on http://#{ip}:#{config.port}"
 app.listen config.port, ip

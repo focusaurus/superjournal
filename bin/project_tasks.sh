@@ -24,6 +24,19 @@ os:prereqs() {
     esac
 }
 
+db:dev_stop() {
+    cdpd
+    killpid tmp/mongod.pid "MongoDB daemon"
+}
+
+db:dev_start() {
+    db:dev_stop
+    cdpd
+    [ -d var ] || mkdir var
+    mongod --dbpath ./var &
+    echo "$!" > tmp/mongod.pid
+}
+
 app:test() {
     set -e
     cdpd
