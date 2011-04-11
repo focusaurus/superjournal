@@ -17,6 +17,7 @@ os:prereqs() {
             #Install phantom js
             sudo port selfupdate
             sudo port install phantomjs
+            sudo port install mongodb
         ;;
         Linux)
         ;;
@@ -32,7 +33,7 @@ app:test() {
         jasbin "spec/js/${DIR}"/*Spec.coffee
     done
     coffee --compile spec
-    open -a "Google Chrome" "http://localhost:9500/SpecRunner.html"
+    phantomjs bin/run-jasmine.js "http://localhost:9500/SpecRunner.html"
 }
 
 app:clean() {
