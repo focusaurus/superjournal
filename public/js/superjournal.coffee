@@ -96,8 +96,8 @@ class SJ.views.EntryView extends Backbone.View
   #Switch this view into `"editing"` mode, displaying the textarea field.
   edit: =>
     $(this.el).addClass("editing")
-    $(this.el).find("textarea").focus()
-    $(this.el).find("textarea").val(this.model.get('content'))
+    this.$("textarea").focus()
+    this.$("textarea").val(this.model.get('content'))
 
   #Close the `"editing"` mode, saving changes to the entry.
   close: =>
