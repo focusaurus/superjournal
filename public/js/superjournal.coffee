@@ -22,14 +22,27 @@ SJ.models = {}
 SJ.views = {}
 SJ.data = {}
 
-#Save all of the entry items under the `"entries"` namespace.
-SJ.localStorage = new Store("entries")
+addConvenienceMethods = (obj, properties) ->
+  for prop in properties
+    ((prop) ->
+      obj[prop] = (newValue...) ->
+        if newValue.length
+          toSet = {}
+          toSet[prop] = newValue[0]
+          return obj.set(toSet) or this
+        else
+          return obj.get(prop)
+        ).call(obj, prop)
+
+#Save all of the entry items under the `'entries'` namespace.
+SJ.localStorage = new Store('entries')
 #--------- Entry Model ----------
 class SJ.models.Entry extends Backbone.Model
-  
+
   initialize: =>
-    this.set("content": this.get("content") or "")
-    this.set("createdOn": this.get("createdOn") or new Date().getTime())
+    addConvenienceMethods(this, ['content', 'createdOn'])
+    this.content(this.content() or '')
+    this.createdOn(this.createdOn() or new Date().getTime())
 
   # Remove this Entry from *localStorage* and delete its view.
   clear: =>
@@ -39,7 +52,7 @@ class SJ.models.Entry extends Backbone.Model
 #--------- Entry Collection ----------
 class SJ.models.EntryList extends Backbone.Collection
   model: SJ.models.Entry
-  url: "/entries"
+  url: '/entries'
   localStorage: SJ.localStorage
 
   #We keep the Entries in sequential order, despite being saved by unordered
@@ -63,10 +76,10 @@ class SJ.views.EntryView extends Backbone.View
 
   #The DOM events specific to an item.
   events:
-    "dblclick div.entry_content": "edit"
-    "click a.entry_delete": "clear"
-    "keypress .entry_textarea": "closeOnShiftEnter"
-  
+    'dblclick div.entry_content': 'edit'
+    'click a.entry_delete': 'clear'
+    'keypress .entry_textarea': 'closeOnShiftEnter'
+
   #The EntryView listens for changes to its model, re-rendering. Since there's
   #a one-to-one correspondence between a **Entry** and a **EntryView** in this
   #app, we set a direct reference on the model for convenience.
@@ -75,35 +88,35 @@ class SJ.views.EntryView extends Backbone.View
     this.model.view = this
 
   HTMLEncodeContent: =>
-    return $('<div/>').text(this.model.get('content')).html()
+    return $('<div/>').text(this.model.content()).html()
 
   formatDate: =>
-    date = new Date(this.model.get("createdOn"))
-    displayDate = $.datepicker.formatDate("DD MM dd, yy", date)
-    displayDate += (" " + date.toTimeString().split(' ')[0])
-    
+    date = new Date(this.model.createdOn())
+    displayDate = $.datepicker.formatDate('DD MM dd, yy', date)
+    displayDate += (' ' + date.toTimeString().split(' ')[0])
+
   #Re-render the contents of the entry item.
   render: =>
     template = _.template($('#entry_template').html())
     modelData = this.model.toJSON()
-    
+
     modelData.createdOn = this.formatDate()
     #Escape HTML entities
     modelData.content = this.HTMLEncodeContent()
     $(this.el).html(template(modelData))
     return this
 
-  #Switch this view into `"editing"` mode, displaying the textarea field.
+  #Switch this view into `'editing'` mode, displaying the textarea field.
   edit: =>
-    $(this.el).addClass("editing")
-    this.$("textarea").focus()
-    this.$("textarea").val(this.model.get('content'))
+    $(this.el).addClass('editing')
+    this.$('textarea').focus()
+    this.$('textarea').val(this.model.content())
 
-  #Close the `"editing"` mode, saving changes to the entry.
+  #Close the `'editing'` mode, saving changes to the entry.
   close: =>
-    rawValue = this.$("textarea").val()
+    rawValue = this.$('textarea').val()
     this.model.save({content: rawValue})
-    $(this.el).removeClass("editing")
+    $(this.el).removeClass('editing')
 
   #If you hit `enter`, we're through editing the item.
   closeOnShiftEnter: (event)=>
@@ -119,18 +132,18 @@ class SJ.views.AppView extends Backbone.View
   #Instead of generating a new element, bind to the existing skeleton of
   #the App already present in the HTML.
   #BUGBUG is this actually used?
-  el: $("#superjournal")
+  el: $('#superjournal')
 
   #Delegated events for creating new items, and clearing completed ones.
   events:
-    "keypress #new_entry":  "createOnShiftEnter"
-    "click .entry_clear a": "clearCompleted"
+    'keypress #new_entry':  'createOnShiftEnter'
+    'click .entry_clear a': 'clearCompleted'
 
   #At initialization we bind to the relevant events on the `Entries`
   #collection, when items are added or changed. Kick things off by
   #loading any preexisting entrys that might be saved in *localStorage*.
   initialize: =>
-    this.textarea    = $("#new_entry")
+    this.textarea    = $('#new_entry')
     this.textarea.keyup this.createOnShiftEnter
 
     EntryList = SJ.data.EntryList
@@ -141,7 +154,7 @@ class SJ.views.AppView extends Backbone.View
   #Add a single entry item to the list by creating a view for it, and
   #appending its element to the list in the HTML.
   addOne: (entry)=>
-    $("#entry_list").prepend(entry.view.render().el)
+    $('#entry_list').prepend(entry.view.render().el)
 
   #Add all items in the **EntryList** collection at once.
   addAll: =>
@@ -151,10 +164,10 @@ class SJ.views.AppView extends Backbone.View
   #persisting it to *localStorage*.
   createOnShiftEnter: (event)=>
     if (event.which is 13 and event.shiftKey)
-      value = $("#new_entry").val().trim()
+      value = $('#new_entry').val().trim()
       if value
         entry = new SJ.models.Entry(content: value)
         view = new SJ.views.EntryView({model: entry})
         SJ.data.EntryList.add(entry)
-        $("#new_entry").val('')
-        $("#new_entry").focus()
+        $('#new_entry').val('')
+        $('#new_entry').focus()

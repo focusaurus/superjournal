@@ -41,7 +41,7 @@ app:prereqs() {
 app:dev_start() {
     kill_stale
     cdpd
-    NODE_ENV=${1-dev} coffee server.coffee &
+    NODE_ENV=${1-dev} coffee ${@} server.coffee &
     echo "$!" > "${PID_FILE}"
     echo "new node process started with pid $(cat ${PID_FILE})"
 }

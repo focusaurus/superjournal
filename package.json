@@ -16,10 +16,7 @@
     "jade": "~0.6"
     "jasmine-node": "~1.0",
     "jasbin": "~1.0",
-    "jsdom": "~0.2",
-    "jquery": "~1.5",
     "stylus": "~0.7",
-    "zombie": "~0.9",
     "backbone": "~0.3",
     "underscore": "~1.1~
   }

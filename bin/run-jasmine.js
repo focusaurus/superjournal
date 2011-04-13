@@ -3,10 +3,10 @@ if (phantom.state.length === 0) {
         console.log('Usage: run-jasmine.js URL');
         phantom.exit();
     } else {
-        phantom.state = 'run-jasmine';
-        phantom.open(phantom.args[0]);
+      phantom.state = 'anon-tests'
+      phantom.open(phantom.args[0]);
     }
-} else {
+} else if (phantom.state === 'anon-tests') {
     window.setInterval(function () {
         var list, el, desc, i, j, exitCode;
         exitCode = 0;
@@ -22,7 +22,13 @@ if (phantom.state.length === 0) {
                     exitCode += 1;
                 }
             }
-            phantom.exit(exitCode);
+            window.clearInterval();
+            phantom.state = 'user-tests';
+            $("input[name=email]").val('test@sj.peterlyons.com');
+            $('#sign_in_form').submit()
         }
     }, 100);
+} else if (phantom.state === 'user-tests') {
+  console.log("User tests executing");
 }
+

@@ -6,7 +6,7 @@ html(lang="en")
     meta(name:"author", content="Peter Lyons")
     meta(name="description", content="An elephant never forgets")
     meta(name="copyright", content="2011, Peter Lyons LLC")
-    
+
     link(rel="stylesheet", href="css/blueprint/screen.css", type="text/css",
       media="screen, projection")
     link(rel="stylesheet", href="css/screen.css", type:"text/css")
@@ -27,12 +27,25 @@ html(lang="en")
     script(type="text/javascript", src="js/backbone.js")
     script(type="text/javascript", src="js/backbone-localstorage.js")
     script(type="text/javascript", src="js/superjournal.js")
+    :coffeescript
+     $(document).ready ->
+       $("#signout_link").button()
+    -if (tests)
+      :coffeescript
+        $(document).ready ->
+          jasmine.getEnv().addReporter new jasmine.TrivialReporter()
+          jasmine.getEnv().execute()
+      link(rel="stylesheet", href="lib/jasmine/jasmine.css", type:"text/css")
+      script(type="text/javascript", src="lib/jasmine/jasmine.js")
+      script(type="text/javascript", src="lib/jasmine/jasmine-html.js")
+      - each test in tests
+        script(type="text/javascript", src=test)
   body
     .container
       .header.span-24.last
         h1 Welcome to #{appName}!
         - if (user)
-          form#signout_form(method='post', action='/signout')
+          form#sign_out_form(method='post', action='/signout')
             | #{user}
             a#signout_link(href='javascript:$("#signout_form").submit();') Sign out
         .navigation.span-24.last
@@ -41,6 +54,3 @@ html(lang="en")
       .footer.span-24.last
         hr
         = "Copyright &copy; 2011 Peter Lyons LLC"
-  :coffeescript
-     $(document).ready ->
-       $("#signout_link").button()

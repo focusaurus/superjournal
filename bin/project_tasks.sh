@@ -41,12 +41,9 @@ app:test() {
     set -e
     cdpd
     #Due to a zombie issue, we can't run all the tests at once
-    for DIR in unit application
-    do
-        jasbin "spec/js/${DIR}"/*Spec.coffee
-    done
+    find spec -name *Spec.coffee -print0 | xargs -n 1 jasbin
     coffee --compile spec
-    phantomjs bin/run-jasmine.js "http://localhost:9500/SpecRunner.html"
+    phantomjs bin/run-jasmine.js "http://localhost:9500/?test=1"
 }
 
 app:clean() {
@@ -70,3 +67,8 @@ app:start_watchers() {
     echo "$!" > tmp/stylus.pid
 }
 
+app:debug() {
+    app:dev_stop
+    cdpd
+    app:dev_start --nodejs --debug
+}

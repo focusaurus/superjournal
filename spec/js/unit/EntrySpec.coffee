@@ -4,11 +4,11 @@ if exports?
 else
   #Running in the browser, dependencies already in global window object
   SJ = window.SJ
-    
+
 describe 'Entry', ->
   testContent = 'foo\nbar'
   entry = new SJ.models.Entry(content: testContent)
-  
+
   beforeEach ->
     entry = new SJ.models.Entry(content: testContent)
 
@@ -30,12 +30,10 @@ describe 'Entry View Browser Tests', ->
       expect(view.formatDate()).toContain("Tuesday")
       #This makes sure we add leading zeros to time elements less than 10
       expect(view.formatDate()).toContain("10:06")
-      
+
     it 'should encode HTML entities', ->
       entry = new SJ.models.Entry(content: '<script>')
       view = new SJ.views.EntryView(model: entry)
-      jasmine.getFixtures().fixturesPath = "js/fixtures"
-      loadFixtures('entry1.html')
       $('#entry_list').prepend(view.render().el)
       (expect(
         $('#entry_list .entry_content').first().html()
