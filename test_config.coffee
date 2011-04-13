@@ -1,9 +1,8 @@
 config = require './server_config'
+url = require 'url'
 
 exports.configTests = (req, locals) ->
-  console.log "BUGBUG config.enableTests is #{config.enableTests}"
-  console.log "BUGBUG req.url is #{req.url}"
-  path = req.url.slice(0, req.url.indexOf('?'))
+  path = url.parse(req.url).pathname
   if not config.enableTests
     return
   if not req.param 'test'
