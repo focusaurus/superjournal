@@ -29,7 +29,7 @@ html(lang="en")
     script(type="text/javascript", src="js/superjournal.js")
     :coffeescript
      $(document).ready ->
-       $("#signout_link").button()
+       $("#sign_out_link").button()
     -if (tests)
       :coffeescript
         $(document).ready ->
@@ -47,7 +47,7 @@ html(lang="en")
         - if (user)
           form#sign_out_form(method='post', action='/signout')
             | #{user}
-            a#signout_link(href='javascript:$("#signout_form").submit();') Sign out
+            a#sign_out_link(href='javascript:$("#sign_out_form").submit();') Sign out
         .navigation.span-24.last
       .content.span-24.last
         !{body}

@@ -15,9 +15,7 @@
     "express": "~1.0",
     "jade": "~0.6"
     "jasmine-node": "~1.0",
-    "jasbin": "~1.0",
     "stylus": "~0.7",
     "backbone": "~0.3",
-    "underscore": "~1.1~
   }
 }

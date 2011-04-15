@@ -41,9 +41,9 @@ app:test() {
     set -e
     cdpd
     #Due to a zombie issue, we can't run all the tests at once
-    find spec -name *Spec.coffee -print0 | xargs -n 1 jasbin
+    #find spec -name *Spec.coffee -print0 | xargs -n 1 jasbin
     coffee --compile spec
-    phantomjs bin/run-jasmine.js "http://localhost:9500/?test=1"
+    phantomjs bin/phantom2.js "http://localhost:9500/?test=1"
 }
 
 app:clean() {

@@ -43,6 +43,6 @@ if (phantom.state.length === 0) {
         }
         phantom.exit(exitCode);
     }
-}, 100);
+  }, 100);
 }
 
