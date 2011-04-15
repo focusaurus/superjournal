@@ -40,10 +40,9 @@ db:dev_start() {
 app:test() {
     set -e
     cdpd
-    #Due to a zombie issue, we can't run all the tests at once
-    #find spec -name *Spec.coffee -print0 | xargs -n 1 jasbin
-    coffee --compile spec
-    phantomjs bin/phantom2.js "http://localhost:9500/?test=1"
+    coffee --compile spec bin
+    time phantomjs bin/phantom_tests.js --verbose
+    rm bin/phantom_tests.js
 }
 
 app:clean() {
