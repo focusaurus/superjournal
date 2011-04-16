@@ -1,9 +1,29 @@
-util = require 'util'
-express = require 'express'
 _ = require 'underscore'
 config = require './server_config'
+express = require 'express'
+mongoose = require 'mongoose'
 tests = require './test_config'
+util = require 'util'
 
+#Define mongoose/mongodb schemas
+toLower = (v) ->
+  v.toLowerCase()
+UserSchema = new mongoose.Schema(
+  email: { type: String, index: true, set: toLower }
+)
+EntrySchema = new mongoose.Schema(
+  content: String
+  createdOn: Number
+  tags: [String]
+  #author: mongoose.ObjectId
+)
+
+mongoose.model 'User', UserSchema
+mongoose.model 'Entry', EntrySchema
+User = mongoose.model 'User'
+Entry = mongoose.model 'Entry'
+
+mongoose.connect config.db.URL
 app = express.createServer()
 
 #In staging in production, listen loopback. nginx listens on the network.
@@ -39,14 +59,72 @@ app.get '/', (req, res) ->
   else
     res.render 'index', {locals: locals}
 
-app.post '/signin', (req, res) ->
-  req.session.user = req.param 'email'
-  console.log "You are now logged in as #{req.session.user}"
+doneLogin = (req, res, user) ->
+  req.session.user = user
+  console.log "You are now logged in as #{req.session.user.email} #{user._id}"
   res.redirect '/'
+
+requireUser = (req, res, next) ->
+  #BUGBUG DISABLING FOR NOW
+  return next()
+  if req.session.user then  next() else res.redirect '/'
+
+app.post '/signin', (req, res) ->
+  email = (req.param('email') or '').toLowerCase()
+  User.findOne {email: email}, (error, user) ->
+    if user
+      doneLogin req, res, user
+    else
+      newUser = new User {email: req.param('email')}
+      newUser.save (error)->
+        if error
+          throw error
+        doneLogin req, res, newUser
 
 app.post '/signout', (req, res) ->
   req.session.user = null
   res.redirect '/'
+
+app.post '/entries', requireUser, (req, res) ->
+  console.log 'POST came in to /entries'
+  console.log req.body
+  entry = new Entry {content: req.body.content, createdOn: new Number(req.body.createdOn)}
+  entry.save (error) ->
+    if error
+      res.send 500
+      return
+    raw = JSON.parse(entry.toJSON())
+    raw.id = raw._id
+    delete raw._id
+    res.send 200, JSON.stringify(raw)
+
+app.get '/entries', requireUser, (req, res) ->
+  #TODO authorization and filtering by user
+  Entry.find (error, entries) ->
+    if error
+      res.send 500, error.toString()
+      return
+    res.header('Content-Type', 'application/json');
+
+    res.send JSON.stringify(entries)
+
+app.get '/entries/:id', requireUser, (req, res) ->
+  #TODO filtering by user
+  Entry.findById req.params.id, (error, entry) ->
+    if error
+      res.send 500, error.toString()
+      return
+    res.send entry.toJSON()
+
+app.del '/entries/:id', requireUser, (req, res) ->
+  console.log 'DELETE came in to /entries'
+  #TODO filtering by user
+  Entry.findById req.params.id, (error, entry) ->
+    if error
+      res.send 500, error.toString()
+      return
+    entry.remove (error) ->
+      res.send 200
 
 util.debug "#{config.appName} server starting on http://#{ip}:#{config.port}"
 app.listen config.port, ip

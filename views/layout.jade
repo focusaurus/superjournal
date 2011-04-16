@@ -25,7 +25,7 @@ html(lang="en")
     script(type="text/javascript", src="js/jquery-ui.js")
     script(type="text/javascript", src="js/underscore.js")
     script(type="text/javascript", src="js/backbone.js")
-    script(type="text/javascript", src="js/backbone-localstorage.js")
+    -//script(type="text/javascript", src="js/backbone-localstorage.js")
     script(type="text/javascript", src="js/superjournal.js")
     :coffeescript
      $(document).ready ->
@@ -46,7 +46,7 @@ html(lang="en")
         h1 Welcome to #{appName}!
         - if (user)
           form#sign_out_form(method='post', action='/signout')
-            | #{user}
+            | #{user.email}
             a#sign_out_link(href='javascript:$("#sign_out_form").submit();') Sign out
         .navigation.span-24.last
       .content.span-24.last

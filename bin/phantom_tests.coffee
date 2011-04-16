@@ -1,10 +1,10 @@
-#out('phantom.state is: ' + phantom.state);
 homePage = 'http://localhost:9500/?test=1'
 errorCount = 0
 verbose = phantom.args[0] in ["--verbose", "-v"]
 metaPrompt = '>...'
 out = (message) ->
-  console.log metaPrompt + message
+  if verbose
+    console.log metaPrompt + message
 
 checkJasmineDOM = (nextState, nextURL) ->
   if $('.finished_at')
@@ -45,7 +45,7 @@ checkJasmineJS = (nextState, nextURL) ->
     console.log output.join ''
     if nextURL
       phantom.state = nextState
-      #out "Opening #{nextURL} with state #{nextState}"
+      out "Opening #{nextURL} with state #{nextState}"
       phantom.open nextURL
     else
       phantom.exit errorCount
@@ -57,7 +57,7 @@ runJasmine = (nextState, nextURL) ->
   , 100)
 
 
-
+out('phantom.state is: ' + phantom.state);
 switch phantom.state
   when ''
     phantom.state = 'anon_tests'
@@ -66,19 +66,23 @@ switch phantom.state
     out 'running anonymous tests'
     runJasmine 'do_log_in', homePage
   when 'do_log_in'
-    #out 'logging in'
+    out 'logging in'
     phantom.state = 'redirect_to_home'
     $('input[name=email]').val 'test@sj.peterlyons.com'
     $('#sign_in_form').submit()
-    #out 'Just submitted the sign in form as ' + \
-    #  $('input[name=email]').val()
+    out 'Just submitted the sign in form as ' + \
+      $('input[name=email]').val()
     phantom.sleep 500 #Wait for the sign in to occur
     phantom.open homePage
   when 'redirect_to_home'
     #I think this is the 302 Redirect to home
-    #out '302 Redirect to / after successful sign in'
+    out '302 Redirect to / after successful sign in'
     phantom.state = 'signed_in_tests'
+    #phantom.open homePage
   when 'signed_in_tests'
     out 'Logged in as: ' + \
       $('#sign_out_form').html().slice(0, 20) + '...'
     runJasmine()
+  else
+    out 'Default case hit. reloading'
+    phantom.open homePage

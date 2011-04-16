@@ -7,14 +7,14 @@ if exports?
   $ = require 'jquery'
   _ = require('./underscore')._
   Backbone = require './backbone'
-  Store = require('./backbone-localstorage').Store
+  #Store = require('./backbone-localstorage').Store
 else
   #Running in a browser
   #Get the libraries into the local coffeescript function scope with explicit
   #shadowing from 'this', which is the browser's 'window' global object
   $ = this.$ #jQuery
   _ = this._ #underscore.js
-  Store = this.Store #backbone-localstorage
+  #Store = this.Store #backbone-localstorage
   Backbone = this.Backbone #backbone.js
   SJ = this.SJ = {} #Create a new empty global SJ object
 
@@ -35,16 +35,17 @@ addConvenienceMethods = (obj, properties) ->
         ).call(obj, prop)
 
 #Save all of the entry items under the `'entries'` namespace.
-SJ.localStorage = new Store('entries')
+#SJ.localStorage = new Store('entries')
 #--------- Entry Model ----------
 class SJ.models.Entry extends Backbone.Model
 
   initialize: =>
+    this.idAttribute = '_id' #This provides MongoDB compatibility
     addConvenienceMethods(this, ['content', 'createdOn'])
     this.content(this.content() or '')
     this.createdOn(this.createdOn() or new Date().getTime())
 
-  # Remove this Entry from *localStorage* and delete its view.
+  # Remove this Entry and delete its view.
   clear: =>
     this.destroy()
     this.view.remove()
@@ -87,9 +88,6 @@ class SJ.views.EntryView extends Backbone.View
     this.model.bind('change', this.render)
     this.model.view = this
 
-  HTMLEncodeContent: =>
-    return $('<div/>').text(this.model.content()).html()
-
   formatDate: =>
     date = new Date(this.model.createdOn())
     displayDate = $.datepicker.formatDate('DD MM dd, yy', date)
@@ -102,7 +100,8 @@ class SJ.views.EntryView extends Backbone.View
 
     modelData.createdOn = this.formatDate()
     #Escape HTML entities
-    modelData.content = this.HTMLEncodeContent()
+    modelData.content = this.model.escape('content')
+    modelData.id = 'TBD'
     $(this.el).html(template(modelData))
     return this
 
@@ -149,8 +148,12 @@ class SJ.views.AppView extends Backbone.View
     EntryList = SJ.data.EntryList
     EntryList.bind('add',     this.addOne)
     EntryList.bind('refresh', this.addAll)
-
-    EntryList.fetch()
+    #BUGBUG enable this to start backbone AJAX JSON POSTS
+    #Currently this breaks the phantom tests
+    options =
+      error: (param)->
+        console.log 'Fetch failed'
+    #EntryList.fetch(options)
   #Add a single entry item to the list by creating a view for it, and
   #appending its element to the list in the HTML.
   addOne: (entry)=>
@@ -169,5 +172,6 @@ class SJ.views.AppView extends Backbone.View
         entry = new SJ.models.Entry(content: value)
         view = new SJ.views.EntryView({model: entry})
         SJ.data.EntryList.add(entry)
+        entry.save()
         $('#new_entry').val('')
         $('#new_entry').focus()
