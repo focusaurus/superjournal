@@ -1,6 +1,9 @@
 form#sign_in_form(method='post', action='/signin')
-  input#email(type='text', name='email')
+  input#email(type='text', name='user[email]')
   input(type='submit',value='Sign in')
 p We don't need no steenkin' passwords!
 - var alt = "We don't need no steenkin' badges";
 img(src="/img/stinking_badges.jpg", alt=alt, title=alt)
+:coffeescript
+  $(document).ready ->
+    $("#email").focus()

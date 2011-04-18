@@ -85,8 +85,9 @@ class SJ.views.EntryView extends Backbone.View
   #a one-to-one correspondence between a **Entry** and a **EntryView** in this
   #app, we set a direct reference on the model for convenience.
   initialize: =>
-    this.model.bind('change', this.render)
-    this.model.view = this
+    if this.model
+      this.model.bind('change', this.render)
+      this.model.view = this
 
   formatDate: =>
     date = new Date(this.model.createdOn())
@@ -95,6 +96,8 @@ class SJ.views.EntryView extends Backbone.View
 
   #Re-render the contents of the entry item.
   render: =>
+    if not this.model
+      return this
     template = _.template($('#entry_template').html())
     modelData = this.model.toJSON()
 
@@ -152,6 +155,9 @@ class SJ.views.AppView extends Backbone.View
     EntryList.bind('add',     this.addOne)
     EntryList.bind('refresh', this.addAll)
     options =
+      #This seems to work around connect.js's bodyParser choking on
+      #application/json
+      contentTypeString: 'application/x-www-form-urlencoded'
       error: (param)->
         console.log 'Fetch failed'
         console.log param
@@ -165,7 +171,7 @@ class SJ.views.AppView extends Backbone.View
   #appending its element to the list in the HTML.
   addOne: (entry)=>
     if not entry.view
-      entry.view = new EntryView entry
+      entry.view = new SJ.views.EntryView entry
     #TODO addOne is getting called multiple times and is not idempotent
     $('#entry_list').prepend(entry.view.render().el)
 

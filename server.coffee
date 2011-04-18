@@ -25,11 +25,16 @@ Entry = mongoose.model 'Entry'
 mongoose.connect config.db.URL
 app = express.createServer()
 
+app.error (error, req, res, next) ->
+  console.log 'BUGBUG error: ' + error
+  console.log req.path
+  next(error)
+
 #In staging in production, listen loopback. nginx listens on the network.
 ip = '127.0.0.1'
 if process.env.NODE_ENV not in ['production', 'staging']
   config.enableTests = true
-  app.use express.logger()
+  #BUGBUG.DISABLED#app.use express.logger()
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
   #Serve up the jasmine SpecRunner.html file
   app.use express.static(__dirname + '/spec')
@@ -67,7 +72,9 @@ requireUser = (req, res, next) ->
   if req.session.user then  next() else res.redirect '/'
 
 app.post '/signin', (req, res) ->
-  email = (req.param('email') or '').toLowerCase()
+  console.log 'BUGBUG /signing POST with Content-Type: ' + req.header 'Content-Type'
+  console.log 'BUGBUG req.body: ' + req.body
+  email = (req.body.user.email or '').toLowerCase()
   User.findOne {email: email}, (error, user) ->
     if user
       doneLogin req, res, user
@@ -83,7 +90,10 @@ app.post '/signout', (req, res) ->
   req.session.user = null
   res.redirect '/'
 
-app.get '/entries', requireUser, (req, res) ->
+app.get '/entries', (req, res) ->
+  #BUGBUG TODO requireUser
+  console.log 'GET came in to /entries'
+  console.log 'With user: ' + req.session.user.email
   #TODO authorization and filtering by user
   Entry.find (error, entries) ->
     if error

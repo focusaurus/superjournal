@@ -64,11 +64,14 @@ switch phantom.state
     phantom.open homePage
   when 'anon_tests'
     out 'running anonymous tests'
+    if not jasmine?
+      console.log 'SuperJournal looks to NOT BE RUNNING. START IT.'
+      phantom.exit 15
     runJasmine 'do_log_in', homePage
   when 'do_log_in'
     out 'logging in'
     phantom.state = 'redirect_to_home'
-    $('input[name=email]').val 'test@sj.peterlyons.com'
+    $('#email').val 'test@sj.peterlyons.com'
     $('#sign_in_form').submit()
     out 'Just submitted the sign in form as ' + \
       $('input[name=email]').val()
