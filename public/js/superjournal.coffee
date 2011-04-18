@@ -101,7 +101,7 @@ class SJ.views.EntryView extends Backbone.View
     modelData.createdOn = this.formatDate()
     #Escape HTML entities
     modelData.content = this.model.escape('content')
-    modelData.id = 'TBD'
+    modelData.id = modelData._id
     $(this.el).html(template(modelData))
     return this
 
@@ -148,15 +148,21 @@ class SJ.views.AppView extends Backbone.View
     EntryList = SJ.data.EntryList
     EntryList.bind('add',     this.addOne)
     EntryList.bind('refresh', this.addAll)
-    #BUGBUG enable this to start backbone AJAX JSON POSTS
-    #Currently this breaks the phantom tests
     options =
       error: (param)->
         console.log 'Fetch failed'
+        console.log param
+      success: (param)->
+        console.log 'Fetch succeeded'
+        console.log param
+    #BUGBUG enable this to start backbone AJAX JSON POSTS
+    #Currently this breaks the phantom tests
     #EntryList.fetch(options)
   #Add a single entry item to the list by creating a view for it, and
   #appending its element to the list in the HTML.
   addOne: (entry)=>
+    view = new SJ.views.EntryView({model: entry})
+    #TODO addOne is getting called multiple times and is not idempotent
     $('#entry_list').prepend(entry.view.render().el)
 
   #Add all items in the **EntryList** collection at once.

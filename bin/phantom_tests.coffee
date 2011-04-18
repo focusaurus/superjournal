@@ -61,7 +61,7 @@ out('phantom.state is: ' + phantom.state);
 switch phantom.state
   when ''
     phantom.state = 'anon_tests'
-    phantom.open(homePage);
+    phantom.open homePage
   when 'anon_tests'
     out 'running anonymous tests'
     runJasmine 'do_log_in', homePage
@@ -78,7 +78,7 @@ switch phantom.state
     #I think this is the 302 Redirect to home
     out '302 Redirect to / after successful sign in'
     phantom.state = 'signed_in_tests'
-    #phantom.open homePage
+    phantom.open homePage
   when 'signed_in_tests'
     out 'Logged in as: ' + \
       $('#sign_out_form').html().slice(0, 20) + '...'
