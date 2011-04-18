@@ -4,12 +4,15 @@ express = require 'express'
 mongoose = require 'mongoose'
 tests = require './test_config'
 
-#Define mongoose/mongodb schemas
+########## Mongoose Setup ##########
 toLower = (v) ->
   v.toLowerCase()
+
+#Define mongoose/mongodb schemas
 UserSchema = new mongoose.Schema(
   email: { type: String, index: true, set: toLower }
 )
+
 EntrySchema = new mongoose.Schema(
   content: String
   createdOn: Number
@@ -23,12 +26,27 @@ User = mongoose.model 'User'
 Entry = mongoose.model 'Entry'
 
 mongoose.connect config.db.URL
+
+########## Express Setup ##########
 app = express.createServer()
 
 app.error (error, req, res, next) ->
   console.log 'BUGBUG error: ' + error
   console.log req.path
   next(error)
+
+bodyParseLogger = (req, res, next) ->
+  contentType = req.headers['content-type'] or ''
+  contentType =  contentType.split(';')[0]
+  if contentType == 'application/json'
+    console.log "BUGBUG got request for path: #{req.url} with content type #{contentType}"
+    bp = express.bodyParser()
+    bp req, res, (error) ->
+      console.log "Error from express.bodyParser for JSON: #{error}"
+  next()
+
+#PL Note to self. express.bodyParser breaks AJAX/JSON. DO NOT USE
+app.use bodyParseLogger
 
 #In staging in production, listen loopback. nginx listens on the network.
 ip = '127.0.0.1'
@@ -40,7 +58,6 @@ if process.env.NODE_ENV not in ['production', 'staging']
   app.use express.static(__dirname + '/spec')
   #Listen on all IPs in dev/test (for testing from other machines)
   ip = '0.0.0.0'
-#PL Note to self. express.bodyParser breaks AJAX/JSON. DO NOT USE
 app.use express.bodyParser()
 app.use express.cookieParser()
 app.use express.session secret: "SuperJournaling asoetuhasoetuhas"
@@ -72,8 +89,6 @@ requireUser = (req, res, next) ->
   if req.session.user then  next() else res.redirect '/'
 
 app.post '/signin', (req, res) ->
-  console.log 'BUGBUG /signing POST with Content-Type: ' + req.header 'Content-Type'
-  console.log 'BUGBUG req.body: ' + req.body
   email = (req.body.user.email or '').toLowerCase()
   User.findOne {email: email}, (error, user) ->
     if user

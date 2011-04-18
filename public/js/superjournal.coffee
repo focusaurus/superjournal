@@ -40,8 +40,11 @@ addConvenienceMethods = (obj, properties) ->
 class SJ.models.Entry extends Backbone.Model
 
   initialize: =>
+    self = this
     this.idAttribute = '_id' #This provides MongoDB compatibility
     addConvenienceMethods(this, ['content', 'createdOn'])
+    this.id = ->
+      return self.get self.idAttribute
     this.content(this.content() or '')
     this.createdOn(this.createdOn() or new Date().getTime())
 
@@ -84,10 +87,10 @@ class SJ.views.EntryView extends Backbone.View
   #The EntryView listens for changes to its model, re-rendering. Since there's
   #a one-to-one correspondence between a **Entry** and a **EntryView** in this
   #app, we set a direct reference on the model for convenience.
-  initialize: =>
-    if this.model
-      this.model.bind('change', this.render)
-      this.model.view = this
+  initialize: (model)=>
+    this.model = model
+    this.model.bind('change', this.render)
+    this.model.view = this
 
   formatDate: =>
     date = new Date(this.model.createdOn())
@@ -96,8 +99,6 @@ class SJ.views.EntryView extends Backbone.View
 
   #Re-render the contents of the entry item.
   render: =>
-    if not this.model
-      return this
     template = _.template($('#entry_template').html())
     modelData = this.model.toJSON()
 
@@ -154,19 +155,8 @@ class SJ.views.AppView extends Backbone.View
     EntryList = SJ.data.EntryList
     EntryList.bind('add',     this.addOne)
     EntryList.bind('refresh', this.addAll)
-    options =
-      #This seems to work around connect.js's bodyParser choking on
-      #application/json
-      contentTypeString: 'application/x-www-form-urlencoded'
-      error: (param)->
-        console.log 'Fetch failed'
-        console.log param
-      success: (param)->
-        console.log 'Fetch succeeded'
-        console.log param
-    #BUGBUG enable this to start backbone AJAX JSON POSTS
-    #Currently this breaks the phantom tests
-    #EntryList.fetch(options)
+    EntryList.fetch()
+    this.addAll()
   #Add a single entry item to the list by creating a view for it, and
   #appending its element to the list in the HTML.
   addOne: (entry)=>

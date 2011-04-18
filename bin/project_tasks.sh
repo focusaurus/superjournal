@@ -67,7 +67,6 @@ app:start_watchers() {
 }
 
 app:debug() {
-    app:dev_stop
-    cdpd
+    node-inspector &
     app:dev_start --nodejs --debug
 }
