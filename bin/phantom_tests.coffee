@@ -1,4 +1,5 @@
-homePage = 'http://localhost:9500/?test=1'
+baseURL = 'http://localhost:9500'
+homePage = baseURL + '/?test=1'
 errorCount = 0
 verbose = phantom.args[0] in ["--verbose", "-v"]
 metaPrompt = '>...'
@@ -57,9 +58,25 @@ runJasmine = (nextState, nextURL) ->
   , 100)
 
 
+next = (path) ->
+  phantom.state = path
+  phantom.open baseURL + path
+
+test = ->
+  #out $('body').html()
+  if $('#entry_list').length > 0
+    out 'FAILED. Got entry list when should have been bounced to /'
+    phantom.exit 5
+
 out('phantom.state is: ' + phantom.state);
 switch phantom.state
   when ''
+    next '/entries'
+  when '/entries'
+    test()
+    next '/entries/1'
+  when '/entries/1'
+    test()
     phantom.state = 'anon_tests'
     phantom.open homePage
   when 'anon_tests'
