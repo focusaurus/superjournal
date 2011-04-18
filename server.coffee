@@ -18,7 +18,7 @@ EntrySchema = new mongoose.Schema(
   content: String
   createdOn: Number
   tags: [String]
-  #author: mongoose.ObjectId
+  author: mongoose.Schema.Types.ObjectId
 )
 
 mongoose.model 'User', UserSchema
@@ -32,7 +32,7 @@ mongoose.connect config.db.URL
 
 requireUser = (req, res, next) ->
   urlObj = url.parse req.url
-  if urlObj.pathname in ['/', '/signin']
+  if urlObj.pathname in ['/', '/signin', '/favicon.ico']
     #The welcome page can be accessed anonymously
     return next()
   else
@@ -116,7 +116,7 @@ app.post '/signout', (req, res) ->
 
 app.get '/entries', (req, res) ->
   #TODO authorization and filtering by user
-  Entry.find (error, entries) ->
+  Entry.find {author: req.session.user._id}, (error, entries) ->
     if error
       res.send 500, error.toString()
       return
@@ -124,11 +124,23 @@ app.get '/entries', (req, res) ->
     res.send JSON.stringify(entries)
 
 app.post '/entries', (req, res) ->
-  console.log 'POST came in to /entries'
-  console.log req.body
   entry = new Entry(
     content: req.body.content
-    createdOn: new Number(req.body.createdOn))
+    createdOn: new Number(req.body.createdOn)
+    author: req.session.user._id)
+  entry.save (error) ->
+    if error
+      res.send error, 500
+      return
+    res.send entry
+
+app.put '/entries', (req, res) ->
+  #BUGBUG this is just a copy of POST for now.  Should implement update.
+  console.log "BUGBUG POST for /entries"
+  entry = new Entry(
+    content: req.body.content
+    createdOn: new Number(req.body.createdOn)
+    author: req.session.user._id)
   entry.save (error) ->
     if error
       res.send error, 500

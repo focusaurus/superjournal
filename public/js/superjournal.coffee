@@ -43,8 +43,8 @@ class SJ.models.Entry extends Backbone.Model
     self = this
     this.idAttribute = '_id' #This provides MongoDB compatibility
     addConvenienceMethods(this, ['content', 'createdOn'])
-    this.id = ->
-      return self.get self.idAttribute
+    #this.id = ->
+    #  return self.get self.idAttribute
     this.content(this.content() or '')
     this.createdOn(this.createdOn() or new Date().getTime())
 
@@ -87,8 +87,8 @@ class SJ.views.EntryView extends Backbone.View
   #The EntryView listens for changes to its model, re-rendering. Since there's
   #a one-to-one correspondence between a **Entry** and a **EntryView** in this
   #app, we set a direct reference on the model for convenience.
-  initialize: (model)=>
-    this.model = model
+  initialize: (options)=>
+    this.model = options.model
     this.model.bind('change', this.render)
     this.model.view = this
 
@@ -161,7 +161,7 @@ class SJ.views.AppView extends Backbone.View
   #appending its element to the list in the HTML.
   addOne: (entry)=>
     if not entry.view
-      entry.view = new SJ.views.EntryView entry
+      entry.view = new SJ.views.EntryView({model: entry})
     #TODO addOne is getting called multiple times and is not idempotent
     $('#entry_list').prepend(entry.view.render().el)
 
