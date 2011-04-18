@@ -126,6 +126,9 @@ class SJ.views.EntryView extends Backbone.View
   clear: =>
     this.model.clear()
 
+  remove: =>
+    $(this.el).remove()
+
 #--------- The Application ----------
 class SJ.views.AppView extends Backbone.View
   #Instead of generating a new element, bind to the existing skeleton of
@@ -161,7 +164,8 @@ class SJ.views.AppView extends Backbone.View
   #Add a single entry item to the list by creating a view for it, and
   #appending its element to the list in the HTML.
   addOne: (entry)=>
-    view = new SJ.views.EntryView({model: entry})
+    if not entry.view
+      entry.view = new EntryView entry
     #TODO addOne is getting called multiple times and is not idempotent
     $('#entry_list').prepend(entry.view.render().el)
 

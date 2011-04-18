@@ -83,6 +83,15 @@ app.post '/signout', (req, res) ->
   req.session.user = null
   res.redirect '/'
 
+app.get '/entries', requireUser, (req, res) ->
+  #TODO authorization and filtering by user
+  Entry.find (error, entries) ->
+    if error
+      res.send 500, error.toString()
+      return
+    res.header('Content-Type', 'application/json');
+    res.send JSON.stringify(entries)
+
 app.post '/entries', requireUser, (req, res) ->
   console.log 'POST came in to /entries'
   console.log req.body
