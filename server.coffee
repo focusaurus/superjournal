@@ -3,6 +3,7 @@ config = require './server_config'
 express = require 'express'
 mongoose = require 'mongoose'
 tests = require './test_config'
+url = require 'url'
 
 ########## Mongoose Setup ##########
 toLower = (v) ->
@@ -28,13 +29,32 @@ Entry = mongoose.model 'Entry'
 mongoose.connect config.db.URL
 
 ########## Express Setup ##########
+
+requireUser = (req, res, next) ->
+  urlObj = url.parse req.url
+  if urlObj.pathname in ['/', '/signin']
+    #The welcome page can be accessed anonymously
+    return next()
+  else
+    if req.session and req.session.user
+      #We have a user, proceed with middleware
+      next()
+    else
+      #Force a sign in
+      #TODO, remember what the desired URL was and go there after sign in
+      console.log 'BUGBUG requireUser redirecting for: ' + urlObj.pathname
+      res.redirect '/'
+
+
 app = express.createServer()
 
 app.error (error, req, res, next) ->
   console.log 'BUGBUG error: ' + error
-  console.log req.path
+  console.log req.url
   next(error)
 
+#DANGER.  The order of these app.use calls is highly sensitive.
+#Don't futz with it.
 #PL Note to self. express.bodyParser must come very early. Not sure why.
 #Otherwise AJAX requests hang
 app.use express.bodyParser()
@@ -43,7 +63,8 @@ app.use express.bodyParser()
 ip = '127.0.0.1'
 if process.env.NODE_ENV not in ['production', 'staging']
   config.enableTests = true
-  #BUGBUG.DISABLED#app.use express.logger()
+  #Note: turn this on as needed. Keep it off normally because it floods.
+  #DISABLED#app.use express.logger()
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
   #Serve up the jasmine SpecRunner.html file
   app.use express.static(__dirname + '/spec')
@@ -55,6 +76,7 @@ app.use express.session secret: "SuperJournaling asoetuhasoetuhas"
 app.use express.static(__dirname + '/public')
 app.use(require('stylus').middleware({src: __dirname + '/public'}))
 app.set 'view engine', 'jade'
+app.use requireUser
 
 defaultLocals =
   appName: config.appName
@@ -75,9 +97,6 @@ doneLogin = (req, res, user) ->
   console.log "You are now logged in as #{req.session.user.email} #{user._id}"
   res.redirect '/'
 
-requireUser = (req, res, next) ->
-  if req.session.user then  next() else res.redirect '/'
-
 app.post '/signin', (req, res) ->
   email = (req.body.user.email or '').toLowerCase()
   User.findOne {email: email}, (error, user) ->
@@ -96,9 +115,6 @@ app.post '/signout', (req, res) ->
   res.redirect '/'
 
 app.get '/entries', (req, res) ->
-  #BUGBUG TODO requireUser
-  console.log 'GET came in to /entries'
-  console.log 'With user: ' + req.session.user.email
   #TODO authorization and filtering by user
   Entry.find (error, entries) ->
     if error
@@ -107,7 +123,7 @@ app.get '/entries', (req, res) ->
     res.header('Content-Type', 'application/json');
     res.send JSON.stringify(entries)
 
-app.post '/entries', requireUser, (req, res) ->
+app.post '/entries', (req, res) ->
   console.log 'POST came in to /entries'
   console.log req.body
   entry = new Entry(
@@ -119,7 +135,7 @@ app.post '/entries', requireUser, (req, res) ->
       return
     res.send entry
 
-app.get '/entries/:id', requireUser, (req, res) ->
+app.get '/entries/:id', (req, res) ->
   #TODO filtering by user
   Entry.findById req.params.id, (error, entry) ->
     if error
@@ -127,7 +143,7 @@ app.get '/entries/:id', requireUser, (req, res) ->
       return
     res.send entry.toJSON()
 
-app.del '/entries/:id', requireUser, (req, res) ->
+app.del '/entries/:id', (req, res) ->
   console.log 'DELETE came in to /entries'
   #TODO filtering by user
   Entry.findById req.params.id, (error, entry) ->
