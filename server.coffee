@@ -35,18 +35,9 @@ app.error (error, req, res, next) ->
   console.log req.path
   next(error)
 
-bodyParseLogger = (req, res, next) ->
-  contentType = req.headers['content-type'] or ''
-  contentType =  contentType.split(';')[0]
-  if contentType == 'application/json'
-    console.log "BUGBUG got request for path: #{req.url} with content type #{contentType}"
-    bp = express.bodyParser()
-    bp req, res, (error) ->
-      console.log "Error from express.bodyParser for JSON: #{error}"
-  next()
-
-#PL Note to self. express.bodyParser breaks AJAX/JSON. DO NOT USE
-app.use bodyParseLogger
+#PL Note to self. express.bodyParser must come very early. Not sure why.
+#Otherwise AJAX requests hang
+app.use express.bodyParser()
 
 #In staging in production, listen loopback. nginx listens on the network.
 ip = '127.0.0.1'
@@ -58,7 +49,6 @@ if process.env.NODE_ENV not in ['production', 'staging']
   app.use express.static(__dirname + '/spec')
   #Listen on all IPs in dev/test (for testing from other machines)
   ip = '0.0.0.0'
-app.use express.bodyParser()
 app.use express.cookieParser()
 app.use express.session secret: "SuperJournaling asoetuhasoetuhas"
 #Note to self. static comes BEFORE stylus or plain .css won't work
