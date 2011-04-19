@@ -11,7 +11,7 @@ describe 'Entry AJAX REST API', ->
   beforeEach ->
       entry = new SJ.models.Entry
 
-  run403Test = (spec, callback) ->
+  prep403Options = (spec, callback) ->
     doneFlag = {done: false}
     done = ->
       return doneFlag.done
@@ -27,28 +27,28 @@ describe 'Entry AJAX REST API', ->
     waitsFor done
 
   it 'should return 403 for non-authenticated GET on /entries', ->
-    run403Test this, (options) ->
+    prep403Options this, (options) ->
       SJ.data.EntryList.fetch options
 
   it 'should return 403 for non-authenticated POST to /entries', ->
-    run403Test this, (options) ->
+    prep403Options this, (options) ->
       entry.save {}, options
 
   it 'should return 403 for non-authenticated PUT to /entries/ID', ->
     entry._id = 42
-    run403Test this, (options) ->
+    prep403Options this, (options) ->
       entry.save {}, options
 
   it 'should return 403 for non-authenticated GET on /entries/ID', ->
     entry._id = 42
     entry.url = =>
       return '/entries/' + entry._id
-    run403Test this, (options) ->
+    prep403Options this, (options) ->
       entry.fetch options
 
   it 'should return 403 for non-authenticated DELETE on /entries/ID', ->
     entry._id = 42
     entry.url = =>
       return '/entries/' + entry._id
-    run403Test this, (options) ->
+    prep403Options this, (options) ->
       entry.destroy options
