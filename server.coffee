@@ -50,6 +50,7 @@ requireAPIUser = (req, res, next) ->
   if req.session and req.session.user
     next()
   else
+    res.header 'Content-Type', 'application/json'
     res.send 'You must log in to access this API', 403
 
 app = express.createServer()
@@ -149,6 +150,7 @@ app.put '/entries/:id', requireAPIUser, (req, res) ->
       return
     else if entry
       if req.session.user._id != entry.author.toString()
+        res.header 'Content-Type', 'application/json'
         res.send "You do not have access to this entry", 403
         return
       entry.content = req.body.content
@@ -178,6 +180,7 @@ app.del '/entries/:id', requireAPIUser, (req, res) ->
       return
     #TODO filtering by user (Need tests for this)
     if req.session.user._id != entry.author
+      res.header 'Content-Type', 'application/json'
       res.send 403
       return
     entry.remove (error) ->
