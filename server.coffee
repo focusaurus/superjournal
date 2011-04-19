@@ -30,21 +30,27 @@ mongoose.connect config.db.URL
 
 ########## Express Setup ##########
 
+#Note requireUser is not currently used, but might be useful in the future
 requireUser = (req, res, next) ->
-  urlObj = url.parse req.url
-  if urlObj.pathname in ['/', '/signin', '/favicon.ico']
-    #The welcome page can be accessed anonymously
-    return next()
+  #urlObj = url.parse req.url
+  #if urlObj.pathname in ['/', '/signin', '/favicon.ico']
+  #  #The welcome page can be accessed anonymously
+  #  return next()
+  #else
+  if req.session and req.session.user
+    #We have a user, proceed with middleware
+    next()
   else
-    if req.session and req.session.user
-      #We have a user, proceed with middleware
-      next()
-    else
-      #Force a sign in
-      #TODO, remember what the desired URL was and go there after sign in
-      console.log 'BUGBUG requireUser redirecting for: ' + urlObj.pathname
-      res.redirect '/'
+    #Force a sign in
+    #TODO, remember what the desired URL was and go there after sign in
+    console.log 'BUGBUG requireUser redirecting for: ' + urlObj.pathname
+    res.redirect '/'
 
+requireAPIUser = (req, res, next) ->
+  if req.session and req.session.user
+    next()
+  else
+    res.send 'You must log in to access this API', 403
 
 app = express.createServer()
 
@@ -59,6 +65,7 @@ app.error (error, req, res, next) ->
 #Otherwise AJAX requests hang
 app.use express.bodyParser()
 
+config.env[process.env.NODE_ENV or 'development'] = true
 #In staging in production, listen loopback. nginx listens on the network.
 ip = '127.0.0.1'
 if process.env.NODE_ENV not in ['production', 'staging']
@@ -76,7 +83,7 @@ app.use express.session secret: "SuperJournaling asoetuhasoetuhas"
 app.use express.static(__dirname + '/public')
 app.use(require('stylus').middleware({src: __dirname + '/public'}))
 app.set 'view engine', 'jade'
-app.use requireUser
+#app.use requireUser
 
 defaultLocals =
   appName: config.appName
@@ -88,6 +95,7 @@ app.get '/', (req, res) ->
   tests.configTests req, locals
   if not req.session.user
     locals.title = 'Sign In'
+    locals.config = config
     res.render 'signin', {locals: locals}
   else
     res.render 'index', {locals: locals}
@@ -114,8 +122,7 @@ app.post '/signout', (req, res) ->
   req.session.user = null
   res.redirect '/'
 
-app.get '/entries', (req, res) ->
-  #TODO authorization and filtering by user
+app.get '/entries', requireAPIUser, (req, res) ->
   Entry.find {author: req.session.user._id}, (error, entries) ->
     if error
       res.send 500, error.toString()
@@ -123,31 +130,39 @@ app.get '/entries', (req, res) ->
     res.header('Content-Type', 'application/json');
     res.send JSON.stringify(entries)
 
-app.post '/entries', (req, res) ->
-  entry = new Entry(
-    content: req.body.content
-    createdOn: new Number(req.body.createdOn)
-    author: req.session.user._id)
-  entry.save (error) ->
+app.post '/entries', requireAPIUser, (req, res) ->
+    entry = new Entry(
+      content: req.body.content
+      createdOn: new Number(req.body.createdOn)
+      author: req.session.user._id)
+    entry.save (error) ->
+      if error
+        res.send error, 500
+        return
+      res.send entry
+      return
+
+app.put '/entries/:id', requireAPIUser, (req, res) ->
+  entry = Entry.findById req.params.id, (error, entry) ->
     if error
       res.send error, 500
       return
-    res.send entry
-
-app.put '/entries', (req, res) ->
-  #BUGBUG this is just a copy of POST for now.  Should implement update.
-  console.log "BUGBUG POST for /entries"
-  entry = new Entry(
-    content: req.body.content
-    createdOn: new Number(req.body.createdOn)
-    author: req.session.user._id)
-  entry.save (error) ->
-    if error
-      res.send error, 500
+    else if entry
+      if req.session.user._id != entry.author.toString()
+        res.send "You do not have access to this entry", 403
+        return
+      entry.content = req.body.content
+      entry.save (error) ->
+        if error
+          res.send error, 500
+          return
+        res.send entry.toJSON()
+        return
+    else
+      res.send 404
       return
-    res.send entry
 
-app.get '/entries/:id', (req, res) ->
+app.get '/entries/:id', requireAPIUser, (req, res) ->
   #TODO filtering by user
   Entry.findById req.params.id, (error, entry) ->
     if error
@@ -155,15 +170,22 @@ app.get '/entries/:id', (req, res) ->
       return
     res.send entry.toJSON()
 
-app.del '/entries/:id', (req, res) ->
-  console.log 'DELETE came in to /entries'
-  #TODO filtering by user
+app.del '/entries/:id', requireAPIUser, (req, res) ->
+  console.log 'DELETE came in to /entries for ' + req.params.id
   Entry.findById req.params.id, (error, entry) ->
     if error
       res.send 500, error.toString()
       return
+    #TODO filtering by user (Need tests for this)
+    if req.session.user._id != entry.author
+      res.send 403
+      return
     entry.remove (error) ->
+      if error
+        res.send error, 500
+        return
       res.send 200
+
 
 console.log "#{config.appName} server starting on http://#{ip}:#{config.port}"
 app.listen config.port, ip

@@ -15,3 +15,4 @@ exports.configTests = (req, locals) ->
         locals.tests.push 'js/unit/EntrySpec.js'
       else
         locals.tests.push 'js/application/WelcomePageSpec.js'
+        locals.tests.push 'js/unit/EntryRESTAPI.js'

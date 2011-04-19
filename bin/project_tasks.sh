@@ -67,6 +67,13 @@ app:start_watchers() {
 }
 
 app:debug() {
+    cdpd
+    killpid  tmp/node-inspector.pid
     node-inspector &
-    app:dev_start --nodejs --debug
+    echo "$!" > tmp/node-inspector.pid
+    kill_stale
+    NODE_ENV=${1-development} coffee --nodejs --debug server.coffee &
+    echo "$!" > "${PID_FILE}"
+    echo "new node process started with pid $(cat ${PID_FILE})"
 }
+

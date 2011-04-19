@@ -7,24 +7,6 @@ out = (message) ->
   if verbose
     console.log metaPrompt + message
 
-checkJasmineDOM = (nextState, nextURL) ->
-  if $('.finished_at')
-    exitCode = 0
-    console.log $('.description').text()
-    $('div.jasmine_reporter > div.suite.failed').each (index, item) ->
-      console.log ''
-      desc = $(item).find('.description').each (index2, item2) ->
-        console.log $(item2).text()
-        exitCode += 1
-    if nextURL
-      phantom.state = nextState
-      #console.log "Opening #{nextURL} with state #{nextState}"
-      phantom.open nextURL
-    else
-      phantom.exit exitCode
-  else
-    console.log 'Jasmine tests did not finish'
-
 checkJasmineJS = (nextState, nextURL) ->
   jasmine.getEnv().currentRunner().finishCallback = () ->
     runner = jasmine.getEnv().currentRunner()
@@ -57,33 +39,16 @@ runJasmine = (nextState, nextURL) ->
     checkJasmineJS(nextState, nextURL)
   , 100)
 
-
-next = (path) ->
-  phantom.state = path
-  phantom.open baseURL + path
-
-test = ->
-  #out $('body').html()
-  if $('#entry_list').length > 0
-    out 'FAILED. Got entry list when should have been bounced to /'
-    phantom.exit 5
-
 out('phantom.state is: ' + phantom.state);
 switch phantom.state
   when ''
-    next '/entries'
-  when '/entries'
-    test()
-    next '/entries/1'
-  when '/entries/1'
-    test()
     phantom.state = 'anon_tests'
     phantom.open homePage
   when 'anon_tests'
-    out 'running anonymous tests'
     if not jasmine?
       console.log 'SuperJournal looks to NOT BE RUNNING. START IT.'
       phantom.exit 15
+    out 'running anonymous tests'
     runJasmine 'do_log_in', homePage
   when 'do_log_in'
     out 'logging in'

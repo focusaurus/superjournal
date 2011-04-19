@@ -47,11 +47,15 @@ class SJ.models.Entry extends Backbone.Model
     #  return self.get self.idAttribute
     this.content(this.content() or '')
     this.createdOn(this.createdOn() or new Date().getTime())
+    this.set(_id: this.get('_id') or '')
 
   # Remove this Entry and delete its view.
   clear: =>
     this.destroy()
     this.view.remove()
+
+  url: =>
+    return '/entries/' + this.get this.idAttribute
 
 #--------- Entry Collection ----------
 class SJ.models.EntryList extends Backbone.Collection
