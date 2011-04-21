@@ -1,13 +1,17 @@
+########## Global Setup Stuff ##########
 baseURL = 'http://localhost:9500'
 homePage = baseURL + '/?test=1'
-errorCount = 0
 verbose = phantom.args[0] in ["--verbose", "-v"]
-metaPrompt = '>...'
+
+########## Shared Helper Functions ##########
 out = (message) ->
   if verbose
-    console.log metaPrompt + message
+    console.log '>...' + message
 
-checkJasmineJS = (nextState, nextURL) ->
+runJasmine = (callback) ->
+  if not jasmine?
+    console.log 'SuperJournal looks to NOT BE RUNNING. START IT.'
+    phantom.exit 15
   jasmine.getEnv().currentRunner().finishCallback = () ->
     runner = jasmine.getEnv().currentRunner()
     results = runner.results()
@@ -23,51 +27,107 @@ checkJasmineJS = (nextState, nextURL) ->
       output.push 'PASS: '
     else
       output.push 'FAIL: '
+      countFailure results.failedCount
     output.push "(#{results.passedCount} pass, #{results.failedCount} fail)"
-    errorCount += results.failedCount
     console.log output.join ''
-    if nextURL
-      phantom.state = nextState
-      out "Opening #{nextURL} with state #{nextState}"
-      phantom.open nextURL
-    else
-      phantom.exit errorCount
+    callback()
   jasmine.getEnv().execute()
 
-runJasmine = (nextState, nextURL) ->
-  window.setInterval( ->
-    checkJasmineJS(nextState, nextURL)
-  , 100)
+#This is a callback the tests invoke when they finish
+runNextTest = ->
+  queue = getQueue()
+  if queue.length == 0
+    #We're done
+    out 'DONE'
+    phantom.exit getFailureCount()
+  else
+    openNextURL()
 
-out('phantom.state is: ' + phantom.state);
+openNextURL = () ->
+  testName = getQueue()[0]
+  phantom.open testFunctions[testName].URL or homePage
+
+########## State Management Functions ##########
+_getState = ->
+  if phantom.state
+    return JSON.parse phantom.state
+  else
+    return {failCount: 0, queue: []}
+
+_setState = (state) ->
+  out "Saving queue: #{state.queue} with failCount #{state.failCount}"
+  phantom.state = JSON.stringify state
+
+getQueue = ->
+  return _getState().queue
+
+setQueue = (queue) ->
+  state = _getState()
+  state.queue = queue
+  _setState state
+  return queue
+
+countFailure = (count=1) ->
+  state = _getState()
+  state.failCount += count
+  _setState state
+
+getFailureCount = ->
+  state = _getState()
+  return state.failCount
+
+########## Test Functions ##########
+testFunctions = {}
+testFunctions.testQueue = (callback, arguments...) ->
+  out 'testQueue called with ' + arguments
+  callback()
+
+testFunctions.testQueue.URL = 'http://www.bing.com'
+testFunctions.testQueue.args = [1, 2, 3]
+
+testFunctions.anonTests = (callback) ->
+  out 'running anonymous tests'
+  runJasmine callback
+
+testFunctions.signIn = (callback) ->
+  out 'logging in'
+  $('#email').val 'test@sj.peterlyons.com'
+  $('#sign_in_form').submit()
+  out 'Just submitted the sign in form as ' + \
+    $('input[name=email]').val()
+  phantom.sleep 500 #Wait for the sign in to occur
+  callback()
+
+testFunctions.signInRedirect = (callback) ->
+  out 'signInRedirect called'
+  callback()
+
+testFunctions.signedInTests = (callback) ->
+  out 'Logged in as: ' + \
+    $('#sign_out_form').html().slice(0, 20) + '...'
+  runJasmine callback
+
+out('phantom.state is: ' + phantom.state)
 switch phantom.state
   when ''
-    phantom.state = 'anon_tests'
-    phantom.open homePage
-  when 'anon_tests'
-    if not jasmine?
-      console.log 'SuperJournal looks to NOT BE RUNNING. START IT.'
-      phantom.exit 15
-    out 'running anonymous tests'
-    runJasmine 'do_log_in', homePage
-  when 'do_log_in'
-    out 'logging in'
-    phantom.state = 'redirect_to_home'
-    $('#email').val 'test@sj.peterlyons.com'
-    $('#sign_in_form').submit()
-    out 'Just submitted the sign in form as ' + \
-      $('input[name=email]').val()
-    phantom.sleep 500 #Wait for the sign in to occur
-    phantom.open homePage
-  when 'redirect_to_home'
-    #I think this is the 302 Redirect to home
-    out '302 Redirect to / after successful sign in'
-    phantom.state = 'signed_in_tests'
-    phantom.open homePage
-  when 'signed_in_tests'
-    out 'Logged in as: ' + \
-      $('#sign_out_form').html().slice(0, 20) + '...'
-    runJasmine()
+    #populate the initial test queue
+    queue = []
+    queue.push 'anonTests'
+    queue.push 'signIn'
+    queue.push 'signInRedirect'
+    queue.push 'signedInTests'
+    setQueue queue
+    #This kicks off the test cycle
+    openNextURL()
   else
-    out 'Default case hit. reloading'
-    phantom.open homePage
+    #parse the queue JSON
+    queue = getQueue()
+    test = queue.shift()
+    setQueue queue
+    testFunc = testFunctions[test]
+    URL = testFunc.URL or homePage
+    out "Running test function #{test} for URL #{URL} with args #{testFunc.args}"
+    args = [runNextTest]
+    args.concat testFunc.arguments
+    #This actually runs the test
+    testFunctions[test].apply window, args
