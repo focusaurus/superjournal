@@ -89,9 +89,9 @@ testFunctions.anonTests = (callback) ->
   out 'running anonymous tests'
   runJasmine callback
 
-testFunctions.signIn = (callback) ->
+testFunctions.signIn = (callback, email='test@sj.peterlyons.com') ->
   out 'logging in'
-  $('#email').val 'test@sj.peterlyons.com'
+  $('#email').val email
   $('#sign_in_form').submit()
   out 'Just submitted the sign in form as ' + \
     $('input[name=email]').val()
@@ -107,6 +107,28 @@ testFunctions.signedInTests = (callback) ->
     $('#sign_out_form').html().slice(0, 20) + '...'
   runJasmine callback
 
+testFunctions.createUser1Entries = (callback) ->
+  model = new SJ.models.Entry {content: 'Test User 1'}
+  out 'About to save the model'
+  options =
+    success: ->
+      out 'BUGBUG model saved successfully'
+    error: ->
+      out 'BUGBUG error saving model: ' + error
+      countFailure()
+    complete: ->
+      callback()
+  model.save {}, options
+
+testFunctions.ajaxContinue = (callback) ->
+  out 'AJAX continue'
+  callback()
+
+testFunctions.signOut = (callback) ->
+  $('#sign_out_form').submit()
+  phantom.sleep 500 #Wait for the sign out to occur
+  callback()
+
 out('phantom.state is: ' + phantom.state)
 switch phantom.state
   when ''
@@ -116,6 +138,10 @@ switch phantom.state
     queue.push 'signIn'
     queue.push 'signInRedirect'
     queue.push 'signedInTests'
+    #queue.push 'createUser1Entries'
+    #queue.push 'ajaxContinue'
+    queue.push 'signOut'
+    queue.push 'signInRedirect'
     setQueue queue
     #This kicks off the test cycle
     openNextURL()

@@ -13,6 +13,7 @@ exports.configTests = (req, locals) ->
       if req.session.user
         locals.tests.push 'js/application/HomePageSpec.js'
         locals.tests.push 'js/unit/EntrySpec.js'
+        locals.tests.push 'js/application/RESTAPIUserSpec.js'
       else
         locals.tests.push 'js/application/WelcomePageSpec.js'
-        locals.tests.push 'js/unit/EntryRESTAPI.js'
+        locals.tests.push 'js/application/RESTAPIAnonSpec.js'

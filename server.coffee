@@ -72,7 +72,7 @@ ip = '127.0.0.1'
 if process.env.NODE_ENV not in ['production', 'staging']
   config.enableTests = true
   #Note: turn this on as needed. Keep it off normally because it floods.
-  #DISABLED#app.use express.logger()
+  app.use express.logger()
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
   #Serve up the jasmine SpecRunner.html file
   app.use express.static(__dirname + '/spec')
