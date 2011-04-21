@@ -159,21 +159,30 @@ class SJ.views.AppView extends Backbone.View
     this.textarea.keyup this.createOnShiftEnter
 
     EntryList = SJ.data.EntryList
-    #EntryList.bind('add',     this.addOne)
-    EntryList.bind('refresh', this.addAll)
     EntryList.fetch()
+    EntryList.sortBy 'createdOn'
+    #We don't bind refresh until after we fetch so we can sort first
+    EntryList.bind('refresh', this.addAll)
+    EntryList.bind('add', this.addOne)
+
   #Add a single entry item to the list by creating a view for it, and
-  #appending its element to the list in the HTML.
-  addOne: (entry)=>
+  #prepending its element to the list in the HTML.
+  addOne: (entry, top = true) =>
     if not entry.view
       entry.view = new SJ.views.EntryView({model: entry})
     entryList = $('#entry_list')
+    element = entry.view.render().el
     if entryList.find('div#entry_' + entry.get('_id')).length == 0
-      $('#entry_list').prepend(entry.view.render().el)
+      if top
+        entryList.prepend(element)
+      else
+        entryList.append(element)
 
   #Add all items in the **EntryList** collection at once.
-  addAll: =>
-    SJ.data.EntryList.each(this.addOne)
+  addAll: (entryList, options, top = false)=>
+    self = this
+    entryList.each (entry)->
+      self.addOne entry, top
 
   #If you hit return in the main textarea field, create new **Entry** model,
   #persisting it to *localStorage*.
