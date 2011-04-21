@@ -47,6 +47,7 @@ class SJ.models.Entry extends Backbone.Model
     addConvenienceMethods(this, ['content', 'createdOn', 'author'])
     this.content(this.content() or '')
     this.createdOn(this.createdOn() or new Date().getTime())
+    #Backbone will make the id value available in entry.id
     this.set(_id: this.get('_id') or '')
 
   # Remove this Entry and delete its view.
