@@ -98,8 +98,8 @@ testFunctions.signIn = (callback, email='test@sj.peterlyons.com') ->
   phantom.sleep 500 #Wait for the sign in to occur
   callback()
 
-testFunctions.signInRedirect = (callback) ->
-  out 'signInRedirect called'
+testFunctions.submitRedirect = (callback) ->
+  out 'submitRedirect called'
   callback()
 
 testFunctions.signedInTests = (callback) ->
@@ -129,6 +129,9 @@ testFunctions.signOut = (callback) ->
   phantom.sleep 500 #Wait for the sign out to occur
   callback()
 
+testFunctions.signInUser2 = (callback) ->
+  testFunctions.signIn callback, '2.test@sj.peterlyons.com'
+
 out('phantom.state is: ' + phantom.state)
 switch phantom.state
   when ''
@@ -136,12 +139,13 @@ switch phantom.state
     queue = []
     queue.push 'anonTests'
     queue.push 'signIn'
-    queue.push 'signInRedirect'
+    queue.push 'submitRedirect'
     queue.push 'signedInTests'
-    #queue.push 'createUser1Entries'
-    #queue.push 'ajaxContinue'
     queue.push 'signOut'
-    queue.push 'signInRedirect'
+    queue.push 'submitRedirect'
+    queue.push 'signInUser2'
+    queue.push 'submitRedirect'
+    queue.push 'signedInTests'
     setQueue queue
     #This kicks off the test cycle
     openNextURL()
