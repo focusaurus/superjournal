@@ -21,6 +21,8 @@ else
 SJ.models = {}
 SJ.views = {}
 SJ.data = {}
+_.templateSettings =
+  interpolate : /\$\{(.+?)\}/g
 
 addConvenienceMethods = (obj, properties) ->
   for prop in properties
@@ -157,17 +159,17 @@ class SJ.views.AppView extends Backbone.View
     this.textarea.keyup this.createOnShiftEnter
 
     EntryList = SJ.data.EntryList
-    EntryList.bind('add',     this.addOne)
+    #EntryList.bind('add',     this.addOne)
     EntryList.bind('refresh', this.addAll)
     EntryList.fetch()
-    this.addAll()
   #Add a single entry item to the list by creating a view for it, and
   #appending its element to the list in the HTML.
   addOne: (entry)=>
     if not entry.view
       entry.view = new SJ.views.EntryView({model: entry})
-    #TODO addOne is getting called multiple times and is not idempotent
-    $('#entry_list').prepend(entry.view.render().el)
+    entryList = $('#entry_list')
+    if entryList.find('div#entry_' + entry.get('_id')).length == 0
+      $('#entry_list').prepend(entry.view.render().el)
 
   #Add all items in the **EntryList** collection at once.
   addAll: =>
