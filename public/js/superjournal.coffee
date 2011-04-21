@@ -45,8 +45,6 @@ class SJ.models.Entry extends Backbone.Model
     self = this
     this.idAttribute = '_id' #This provides MongoDB compatibility
     addConvenienceMethods(this, ['content', 'createdOn', 'author'])
-    #this.id = ->
-    #  return self.get self.idAttribute
     this.content(this.content() or '')
     this.createdOn(this.createdOn() or new Date().getTime())
     this.set(_id: this.get('_id') or '')
