@@ -37,6 +37,9 @@ textarea {
   overflow: hidden;
   height: 5em;
 }
+#sign_out_link {
+  font-size: 0.7em;
+}
 .entry {
   border: 2px #82a580 solid;
   border-radius: 10px;
@@ -53,6 +56,16 @@ textarea {
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   padding-left: 10px;
+}
+.entry_delete {
+  color: #a5393c;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 2px;
+  margin: 2px;
+}
+.entry_delete:hover {
+  cursor: pointer;
 }
 #entry_list .edit {
   display: none;
