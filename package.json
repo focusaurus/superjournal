@@ -11,7 +11,7 @@
     "node": "*"
   },
   "dependencies": {
-    "coffeescript": "~1.0",
+    "coffee-script": "~1.0",
     "express": "~1.0",
     "jade": "~0.6",
     "jasmine-node": "~1.0",

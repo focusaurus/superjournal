@@ -1,7 +1,9 @@
 #Called by tasks.sh to initialize key variables
 setup() {
     cd "${TASK_DIR}/.."
-    PROJECT_DIR=$(pwd)
+    PROJECT_DIR=~/projects/superjournal
+    REPO_URL=ssh://git.peterlyons.com/home/plyons/projects/superjournal.git
+    BRANCH=master
     NODE_VERSION=0.4.6
     STAGING_HOSTS=sj.peterlyons.com
     cd - > /dev/null
@@ -44,6 +46,10 @@ nginx
 
 os:initial_setup() { #TASK: sudo
     os:prereqs
+}
+
+scm:initial_setup() {
+    scm:clone
 }
 
 app:initial_setup() {
