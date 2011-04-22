@@ -1,4 +1,6 @@
 *~
 tmp
+var
 public/js/superjournal.js
 spec/js/*/*.js
+bin/phantom_tests.js

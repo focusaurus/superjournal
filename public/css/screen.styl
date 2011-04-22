@@ -38,7 +38,7 @@ bold()
 padding-normal()
   padding 10px
 
-border()
+border(color=dark1)
   border 2px dark1 solid
 
 ////////// BODY AND WRAPPER //////////
@@ -58,7 +58,7 @@ h1
 
 a:hover
   color dark2
-  
+
 .header
   padding-top 10px
   h1
@@ -80,6 +80,10 @@ textarea
   overflow hidden
   height 5em
 
+////////// Sign In/Sign Out //////////
+#sign_out_link
+  font-size 0.7em
+
 ////////// JOURNAL ENTRIES //////////
 .entry
   border()
@@ -94,12 +98,22 @@ textarea
   rounded()
   padding-left 10px
 
+.entry_delete
+  color dark2_comp
+  font-weight bold
+  text-decoration none
+  padding 2px
+  margin 2px
+
+.entry_delete:hover
+  cursor pointer
+
 #entry_list .edit
   display none
 
 #entry_list .editing .edit
   display block
-  
+
 #entry_list .editing .display
   display none
 

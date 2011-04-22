@@ -1,3 +1,10 @@
 exports.port = 9500
 exports.appName = "SuperJournal"
-exports.version = "0.0.2"
+exports.enableTests = false
+exports.db =
+  URL: 'mongodb://localhost/superjournal_dev'
+exports.env =
+  production: false
+  staging: false
+  test: false
+  development: false
