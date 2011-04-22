@@ -179,6 +179,12 @@ web:start() {
     _web start
 }
 
+#Now load in the project-specific stuff
+for FILE in "${TASK_DIR}/"*_tasks.sh
+do
+    source "${FILE}"
+done
+setup
 if ! expr "${1}" : '.*:' > /dev/null; then
     ENV_NAME="${1}"
     shift
@@ -218,12 +224,6 @@ done
 
 if [ -z "${ENV_NAME}" ]; then
     #local mode
-    #Now load in the project-specific stuff
-    for FILE in "${TASK_DIR}/"*_tasks.sh
-    do
-        source "${FILE}"
-    done
-    setup
     eval "${OP}" "${@}"
 else
     #remote mode

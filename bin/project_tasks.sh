@@ -2,6 +2,8 @@
 setup() {
     cd "${TASK_DIR}/.."
     PROJECT_DIR=$(pwd)
+    NODE_VERSION=0.4.6
+    STAGING_HOSTS=sj.peterlyons.com
     cd - > /dev/null
 }
 
@@ -11,7 +13,7 @@ mktmp() {
     cd -
 }
 
-os:prereqs() {
+os:prereqs() { #TASK: sudo
     case $(uname) in
         Darwin)
             #Install phantom js
@@ -20,20 +22,53 @@ os:prereqs() {
             sudo port install mongodb
         ;;
         Linux)
+            DEBS='#Needed to download node and npm
+curl
+#Needed to build node.js
+g++
+#Source Code Management
+git-core
+#Needed to build node.js with SSL support
+libssl-dev
+#Needed to build node.js
+make
+#For monitoring
+monit
+#This is our web server
+nginx
+'
+            apt_install "${DEBS}"
         ;;
     esac
+}
+
+os:initial_setup() { #TASK: sudo
+    os:prereqs
+}
+
+app:initial_setup() {
+    app:prereqs
+}
+
+db:dev_stop() {
+    cdpd
+    killpid tmp/mongod.pid "MongoDB daemon"
+}
+
+db:dev_start() {
+    db:dev_stop
+    cdpd
+    [ -d var ] || mkdir var
+    mongod --dbpath ./var &
+    echo "$!" > tmp/mongod.pid
 }
 
 app:test() {
     set -e
     cdpd
-    #Due to a zombie issue, we can't run all the tests at once
-    for DIR in unit application
-    do
-        jasbin "spec/js/${DIR}"/*Spec.coffee
-    done
-    coffee --compile spec
-    phantomjs bin/run-jasmine.js "http://localhost:9500/SpecRunner.html"
+    coffee --compile spec bin
+    time phantomjs bin/phantom_tests.js --verbose
+    rm bin/phantom_tests.js
 }
 
 app:clean() {
@@ -55,5 +90,16 @@ app:start_watchers() {
     echo "$!" > tmp/coffee.pid
     stylus --watch public/css &
     echo "$!" > tmp/stylus.pid
+}
+
+app:debug() {
+    cdpd
+    killpid  tmp/node-inspector.pid
+    node-inspector &
+    echo "$!" > tmp/node-inspector.pid
+    kill_stale
+    NODE_ENV=${1-development} coffee --nodejs --debug server.coffee &
+    echo "$!" > "${PID_FILE}"
+    echo "new node process started with pid $(cat ${PID_FILE})"
 }
 

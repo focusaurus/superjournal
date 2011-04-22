@@ -10,10 +10,12 @@
        window.App.initialize()
        $("#new_entry").focus()
   script(type="text/template", id="entry_template")
-    .entry.span-24.last
+    .entry.span-24.last(id="entry_${id}")
       .display
-        .entry_createdOn Created: <%= createdOn %>
-        .entry_content <%= content %>
+        .entry_createdOn
+          span.span-17 Created: ${createdOn}
+          span.span-6 ID: ${id}
+          a.entry_delete X
+        .entry_content ${content}
       .edit
         textarea.entry_textarea
-
