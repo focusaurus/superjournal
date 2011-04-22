@@ -23,12 +23,13 @@ app:prereqs() {
     ./configure  --prefix=~/node && make && make install && make && make install
     cd ..
     rm -rf node-*
+    export PATH=~/node/bin:$PATH
     cd ..
     echo "Installing npm"
     #Yes, I know this is a security risk.  I accept the risk. Life is short.
     curl http://npmjs.org/install.sh | sh || exit 4
     echo "Installing npm packages"
-    for DEP in $(python "./bin/get_prereqs.py")
+    for DEP in $(node "./bin/get_prereqs.js")
     do
         npm install "${DEP}" || exit 5
     done
@@ -41,7 +42,7 @@ app:prereqs() {
 app:dev_start() {
     kill_stale
     cdpd
-    NODE_ENV=${1-dev} coffee ${@} server.coffee &
+    NODE_ENV=${1-development} coffee ${@} server.coffee &
     echo "$!" > "${PID_FILE}"
     echo "new node process started with pid $(cat ${PID_FILE})"
 }
