@@ -6,6 +6,7 @@ setup() {
     BRANCH=master
     NODE_VERSION=0.4.6
     STAGING_HOSTS=sj.peterlyons.com
+    export PATH=~/node/bin:$PATH
     cd - > /dev/null
 }
 
