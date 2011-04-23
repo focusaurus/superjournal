@@ -4,8 +4,9 @@ setup() {
     PROJECT_DIR=~/projects/superjournal
     REPO_URL=ssh://git.peterlyons.com/home/plyons/projects/superjournal.git
     BRANCH=master
-    NODE_VERSION=0.4.6
+    NODE_VERSION=0.4.3
     STAGING_HOSTS=sj.peterlyons.com
+    export PATH=~/node/bin:$PATH
     cd - > /dev/null
 }
 
@@ -56,14 +57,14 @@ app:initial_setup() {
     app:prereqs
 }
 
-db:initial_setup() {
+db:initial_setup() { #TASK: sudo
     #MongoDB install
-    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
+    apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
     echo \
       "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" \
-      | sudo tee -a /etc/apt/sources.list
-    sudo apt-get update
-    sudo apt-get install mongodb-10gen
+      >>/etc/apt/sources.list
+    apt-get update
+    apt-get install mongodb-10gen
 }
 
 db:dev_stop() {
