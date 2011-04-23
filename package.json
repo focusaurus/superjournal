@@ -17,6 +17,7 @@
     "jasmine-node": "~1.0",
     "stylus": "~0.7",
     "backbone": "~0.3",
-    "mongoose": "~1.2"
+    "mongoose": "~1.2",
+    "markdown-js": "*"
   }
 }
