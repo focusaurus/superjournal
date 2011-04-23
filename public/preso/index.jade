@@ -1,0 +1,174 @@
+!!! 5
+html
+  head
+    meta(charset='utf-8')
+    -// Slide meta data, remove/edit as you see fit
+    title Backbone and Friends: Boulder JS with Pete Lyons
+    meta(name='author', content='Peter Lyons')
+    meta(name='email', content='pete@peterlyons.com')
+    meta(name='date', content='2011-04-22')
+    meta(name='venue', content='Boulder JS Meetup Group')
+    -// Slippy core file and dependencies
+    - var prefix = '/preso/';
+    script(type='text/javascript', src= prefix + 'jquery.min.js')
+    script(type='text/javascript', src= prefix + 'jquery.history.js')
+    script(type='text/javascript', src= prefix + 'slippy.js')
+    -// Slippy structural styles
+    link(type='text/css', rel='stylesheet', href= prefix + 'slippy.css')
+    -// Slippy theme
+    link(type='text/css', rel='stylesheet', href= prefix + 'slippy-pure.css')
+    -// Slippy init code
+    :coffeescript
+      $(document).ready(->
+        $(".slide").slippy()
+        SyntaxHighlighter.all()
+      )
+    -// Custom style for this deck
+    -//http://colorschemedesigner.com/#2B11T8EtIq3Rp
+    -//	93A783	669641	E2F8D2	EFF8E9
+    :stylus
+      light1 = #B2D299
+      light2 = #E2F8D2
+      light3 = #EFF8E9
+      dark1 = #93A783
+      dark2 = #669641
+      dark3 = #000
+      body
+        color dark1
+        background light3
+      a
+        color dark2
+      li
+        padding 5px
+      li ul li
+        font-size .8em
+        color light1
+      .footer
+        padding-bottom 20px
+      ul
+        padding-bottom 10px
+        padding-top 10px
+      p
+        padding 10px
+        font-size 1.5em
+
+  body
+    .slide
+      :markdown
+        # Backbone.js and Friends
+        A topic for Boulder JS [http://www.meetup.com/Boulder-JS/]()
+    .slide
+      :markdown
+        # Backbone provides "MVC"
+        But it's really
+
+        * Model
+            * Also collections of models
+        * Controller
+            * backbone views are really more like controllers
+            * backbone does NOT provide any view rendering capabilities directly
+        * Router
+            * backbone controller handles routing URL fragments
+        Backbone is minimal and straightforward
+    .slide
+      :markdown
+        Runs in the browser (primarily...)
+
+        Represents application business objects as models
+
+        Renders models in views
+
+        Provides REST/JSON CRUD operations to the server (Default)
+
+        Emits events to keep models and views synchronized
+
+        Can be customized for other transports, back ends, etc
+    .slide
+      :markdown
+        What does backbone do for us?
+
+        * When the page loads, it can fetch the collections of model
+            * Makes HTTP GET for JSON data at the URL of each collection
+        * Transforms raw JSON documents to backbone Model objects
+        * Adds those objects to the browser-side backbone collection
+        * Via event bindings, views are rendered with latest model data
+        * When data changes, backbone provides a validation framework
+        * If data is valid, backbone will make REST calls to the back end with the latest JSON data
+        * Can refresh the views with changes made on the back end
+    .slide
+      :markdown
+        # Let's dig in
+
+        * Home Page and Docs
+            * [http://documentcloud.github.com/backbone/]()
+        * Github repository
+            * [https://github.com/documentcloud/backbone/]()
+        * Annotated Source
+            * [http://documentcloud.github.com/backbone/docs/backbone.html]()
+        * Github source with line numbers
+            * [https://github.com/documentcloud/backbone/blob/master/backbone.js]()
+
+    .slide
+      :markdown
+        Tonight's demo application: **SuperJournal**
+
+        Simple note taking demo app
+
+        Technology stack has maximal JS Kool-Aid
+
+        * node.js runtime [http://nodejs.org]()
+        * CoffeeScript JavaScript dialect [http://jashkenas.github.com/coffee-script/]()
+            * That's how I roll
+        * express.js web framework [http://expressjs.org]()
+        * Backbone MVC [http://documentcloud.github.com/backbone/]()
+        * MongoDB no-SQL persistence [http://www.mongodb.org/]()
+        * Mongoose ODM [http://mongoosejs.com/]()
+        * Jade templates [https://github.com/visionmedia/jade]()
+        * Phantom JS for headless testing [http://www.phantomjs.org/]()
+        * Jasmine BDD for test code [http://pivotal.github.com/jasmine/]()
+        * Stylus CSS preprocessor [https://github.com/LearnBoost/stylus]()
+    .slide
+      :markdown
+        SuperJournal REST API and REST primer
+
+        * Create
+            * POST /entries
+            * Content-Type: application/json
+            * Put JSON model representation in request body
+        * Read
+            * GET /entries
+            * GET /entries/ID
+        * Update
+            * PUT /enteries/ID
+            * Content-Type: application/json
+            * Put JSON model representation in request body
+        * Delete
+            * DELETE /entries/ID
+    .slide
+      :markdown
+        * SuperJournal Github repository
+            * [https://github.com/focusaurus/superjournal]()
+        * Test/Dev server: sj.peterlyons.com
+            * 10 guest logins: guest1 through guest10
+            * password == username
+            * Code already checked out in ~/superjournal for each user
+            * node & friends installed in /home/plyons/node/bin, but already in your PATH
+        * you.startHacking(new Date().getTime());
+    .slide
+      :markdown
+        Exercise Ideas:
+
+        Add support for tagging each entry with one or more text tags
+
+        Allow entries to use markdown syntax
+
+        Check server for updates and display automatically
+
+        Search
+
+    .footer
+      .left
+        a(href='http://peterlyons.com') Peter Lyons
+      .right
+        a(href='http://www.meetup.com/Boulder-JS/') Boulder JS
+

@@ -189,6 +189,8 @@ app.del '/entries/:id', requireAPIUser, (req, res) ->
         return
       res.send 200
 
+app.get '/preso', (req, res) ->
+  res.render __dirname + '/public/preso/index.jade', {layout: false}
 
 console.log "#{config.appName} server starting on http://#{ip}:#{config.port}"
 app.listen config.port, ip

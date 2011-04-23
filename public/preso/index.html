@@ -1,0 +1,131 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Backbone and Friends: Boulder JS with Pete Lyons</title><meta name="author" content="Peter Lyons"><meta name="email" content="pete@peterlyons.com"><meta name="date" content="2011-04-22"><meta name="venue" content="Boulder JS Meetup Group"><script type="text/javascript" src="jquery.min.js"></script><script type="text/javascript" src="jquery.history.js"></script><script type="text/javascript" src="slippy.js"></script><link type="text/css" rel="stylesheet" href="slippy.css"><link type="text/css" rel="stylesheet" href="slippy-pure.css"><script type="text/javascript" src="highlighter/shCore.js"></script><script type="text/javascript" src="highlighter/shBrushBash.js"></script><script type="text/javascript" src="highlighter/shBrushCss.js"></script><script type="text/javascript" src="highlighter/shBrushJScript.js"></script><script type="text/javascript" src="highlighter/shBrushPlain.js"></script><link type="text/css" rel="stylesheet" href="highlighter/shCore.css"><link type="text/css" rel="stylesheet" href="highlighter/shThemeEclipse.css"><script type="text/javascript">
+(function() {
+  $(document).ready(function() {
+    $(".slide").slippy();
+    return SyntaxHighlighter.all();
+  });
+}).call(this);
+</script><style>body {
+  color: #93a783;
+  background: #eff8e9;
+}
+a {
+  color: #669641;
+}
+li {
+  padding: 5px;
+}
+li ul li {
+  font-size: 0.8em;
+  color: #b2d299;
+}
+.footer {
+  padding-bottom: 20px;
+}
+ul {
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+p {
+  padding: 10px;
+  font-size: 1.5em;
+}
+</style></head><body><div class="slide"><h1>Backbone.js and Friends</h1>
+
+<p>A topic for Boulder JS <a href="">http://www.meetup.com/Boulder-JS/</a></p></div><div class="slide"><h1>Backbone provides "MVC"</h1>
+
+<p>But it&#39;s really</p>
+
+<ul>
+<li>Model
+<ul><li>Also collections of models</li></ul></li>
+<li>Controller
+<ul><li>backbone views are really more like controllers  </li>
+<li>backbone does NOT provide any view rendering capabilities directly</li></ul></li>
+<li>Router
+<ul><li>backbone controller handles routing URL fragments
+Backbone is minimal and straightforward</li></ul></li>
+</ul></div><div class="slide"><p>Runs in the browser (primarily...)</p>
+
+<p>Represents application business objects as models</p>
+
+<p>Renders models in views</p>
+
+<p>Provides REST/JSON CRUD operations to the server (Default)</p>
+
+<p>Emits events to keep models and views synchronized</p>
+
+<p>Can be customized for other transports, back ends, etc</p></div><div class="slide"><p>What does backbone do for us?</p>
+
+<ul>
+<li>When the page loads, it can fetch the collections of model
+<ul><li>Makes HTTP GET for JSON data at the URL of each collection</li></ul></li>
+<li>Transforms raw JSON documents to backbone Model objects</li>
+<li>Adds those objects to the browser-side backbone collection</li>
+<li>Via event bindings, views are rendered with latest model data</li>
+<li>When data changes, backbone provides a validation framework</li>
+<li>If data is valid, backbone will make REST calls to the back end with the latest JSON data</li>
+<li>Can refresh the views with changes made on the back end</li>
+</ul></div><div class="slide"><h1>Let&#39;s dig in</h1>
+
+<ul>
+<li>Home Page and Docs
+<ul><li><a href="">http://documentcloud.github.com/backbone/</a></li></ul></li>
+<li>Github repository
+<ul><li><a href="">https://github.com/documentcloud/backbone/</a></li></ul></li>
+<li>Annotated Source
+<ul><li><a href="">http://documentcloud.github.com/backbone/docs/backbone.html</a></li></ul></li>
+<li>Github source with line numbers
+<ul><li><a href="">https://github.com/documentcloud/backbone/blob/master/backbone.js</a>  </li></ul></li>
+</ul></div><div class="slide"><p>Tonight&#39;s demo application: <strong>SuperJournal</strong></p>
+
+<p>Simple note taking demo app</p>
+
+<p>Technology stack has maximal JS Kool-Aid</p>
+
+<ul>
+<li>node.js runtime <a href="">http://nodejs.org</a></li>
+<li>CoffeeScript JavaScript dialect <a href="">http://jashkenas.github.com/coffee-script/</a>
+<ul><li>That&#39;s how I roll</li></ul></li>
+<li>express.js web framework <a href="">http://expressjs.org</a></li>
+<li>Backbone MVC <a href="">http://documentcloud.github.com/backbone/</a></li>
+<li>MongoDB no-SQL persistence <a href="">http://www.mongodb.org/</a></li>
+<li>Mongoose ODM <a href="">http://mongoosejs.com/</a></li>
+<li>Jade templates <a href="">https://github.com/visionmedia/jade</a></li>
+<li>Phantom JS for headless testing <a href="">http://www.phantomjs.org/</a></li>
+<li>Jasmine BDD for test code <a href="">http://pivotal.github.com/jasmine/</a></li>
+<li>Stylus CSS preprocessor <a href="">https://github.com/LearnBoost/stylus</a></li>
+</ul></div><div class="slide"><p>SuperJournal REST API and REST primer</p>
+
+<ul>
+<li>Create
+<ul><li>POST /entries  </li>
+<li>Content-Type: application/json  </li>
+<li>Put JSON model representation in request body</li></ul></li>
+<li>Read
+<ul><li>GET /entries  </li>
+<li>GET /entries/ID</li></ul></li>
+<li>Update
+<ul><li>PUT /enteries/ID  </li>
+<li>Content-Type: application/json  </li>
+<li>Put JSON model representation in request body</li></ul></li>
+<li>Delete
+<ul><li>DELETE /entries/ID</li></ul></li>
+</ul></div><div class="slide"><ul>
+<li>SuperJournal Github repository
+<ul><li><a href="">https://github.com/focusaurus/superjournal</a></li></ul></li>
+<li>Test/Dev server: sj.peterlyons.com
+<ul><li>10 guest logins: guest1 through guest10  </li>
+<li>password == username  </li>
+<li>Code already checked out in ~/superjournal for each user  </li>
+<li>node &amp; friends installed in /home/plyons/node/bin, but already in your PATH</li></ul></li>
+<li>you.startHacking(new Date().getTime());</li>
+</ul></div><div class="slide"><p>Exercise Ideas:</p>
+
+<p>Add support for tagging each entry with one or more text tags</p>
+
+<p>Allow entries to use markdown syntax</p>
+
+<p>Check server for updates and display automatically</p>
+
+<p>Search</p></div><div class="footer"><div class="left"><a href="http://peterlyons.com">Peter Lyons</a></div><div class="right"><a href="http://www.meetup.com/Boulder-JS/">Boulder JS</a></div></div></body></html>
