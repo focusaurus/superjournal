@@ -56,6 +56,16 @@ app:initial_setup() {
     app:prereqs
 }
 
+db:initial_setup() {
+    #MongoDB install
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
+    echo \
+      "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" \
+      | sudo tee -a /etc/apt/sources.list
+    sudo apt-get update
+    sudo apt-get install mongodb-10gen
+}
+
 db:dev_stop() {
     cdpd
     killpid tmp/mongod.pid "MongoDB daemon"
@@ -65,7 +75,7 @@ db:dev_start() {
     db:dev_stop
     cdpd
     [ -d var ] || mkdir var
-    mongod --dbpath ./var &
+    mongod --dbpath ./var --port 9501 &
     echo "$!" > tmp/mongod.pid
 }
 
